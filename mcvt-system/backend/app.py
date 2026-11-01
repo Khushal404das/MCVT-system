@@ -17,7 +17,9 @@ except ImportError:
     HAS_WEBSOCKETS = False
     websockets = None
 import torch
-torch.set_num_threads(2)
+torch.set_num_threads(1)
+import cv2
+cv2.setNumThreads(1)
 from flask import Flask, Response, jsonify, request, send_from_directory
 from flask_cors import CORS
 

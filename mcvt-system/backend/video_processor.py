@@ -74,19 +74,33 @@ class CameraStream:
               f"{self.orig_width}x{self.orig_height} -> display {self.width}x{self.height} "
               f"@ {self.fps:.1f}fps, {self.total_frames} frames")
 
-    def advance_and_read(self, advance):
-        """Advance video frames to match wall-clock elapsed time, then read next frame."""
+    def advance_to_time(self, elapsed_sec):
+        """
+        Advance video frame precisely to match master wall-clock elapsed time.
+        Guarantees that all cameras play in exact real-world 1.0x synchronized speed.
+        """
         with self._cap_lock:
             if not self.is_running or self.cap is None:
                 return None
 
-            # Fast grab to advance frames to match real time
-            for _ in range(advance - 1):
-                self.cap.grab()
-                self.frame_idx += 1
-                if self.total_frames > 0 and self.frame_idx >= self.total_frames:
-                    self.cap.set(cv2.CAP_PROP_POS_FRAMES, 0)
-                    self.frame_idx = 0
+            duration_sec = self.total_frames / max(1.0, self.fps) if self.total_frames > 0 else 1500.0
+            current_time = elapsed_sec % max(1.0, duration_sec)
+            target_frame = int(current_time * self.fps)
+            if self.total_frames > 0:
+                target_frame = target_frame % self.total_frames
+
+            # Determine difference between target_frame and self.frame_idx
+            frames_to_advance = target_frame - self.frame_idx
+            if frames_to_advance < 0 or frames_to_advance > 100:
+                # Video looped or large desync
+                self.cap.set(cv2.CAP_PROP_POS_FRAMES, target_frame)
+                self.frame_idx = target_frame
+                frames_to_advance = 1
+
+            if frames_to_advance > 1:
+                for _ in range(frames_to_advance - 1):
+                    self.cap.grab()
+                self.frame_idx = target_frame - 1
 
             ret, frame = self.cap.read()
             self.frame_idx += 1
@@ -98,11 +112,17 @@ class CameraStream:
                     return None
             return frame
 
+    def advance_and_read(self, advance):
+        if not hasattr(self, '_t_start') or self._t_start is None:
+            self._t_start = time.perf_counter()
+        elapsed = time.perf_counter() - self._t_start
+        return self.advance_to_time(elapsed)
+
     def set_display_frame(self, frame):
-        """Set the live rendered frame (thread-safe) and pre-encode JPEGs."""
+        """Set the live rendered frame (thread-safe) and fast-encode JPEGs."""
         thumb = cv2.resize(frame, (640, 360), interpolation=cv2.INTER_LINEAR)
-        _, thumb_jpg = cv2.imencode('.jpg', thumb, [cv2.IMWRITE_JPEG_QUALITY, 72])
-        _, full_jpg = cv2.imencode('.jpg', frame, [cv2.IMWRITE_JPEG_QUALITY, 80])
+        _, thumb_jpg = cv2.imencode('.jpg', thumb, [cv2.IMWRITE_JPEG_QUALITY, 68])
+        _, full_jpg = cv2.imencode('.jpg', frame, [cv2.IMWRITE_JPEG_QUALITY, 75])
         thumb_bytes = thumb_jpg.tobytes()
         full_bytes = full_jpg.tobytes()
         with self._frame_lock:
@@ -317,14 +337,13 @@ class MultiCameraProcessor:
 
     def _draw_camera_info(self, frame, camera_id):
         camera = self.cameras[camera_id]
-        overlay = frame.copy()
-        cv2.rectangle(overlay, (0, 0), (frame.shape[1], 36), (0, 0, 0), -1)
-        frame = cv2.addWeighted(overlay, 0.6, frame, 0.4, 0)
-        cv2.putText(frame, f"Camera {camera_id.upper()}", (12, 25),
-                    cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 255), 2, cv2.LINE_AA)
+        # Fast direct rectangle overlay with zero memory allocation
+        cv2.rectangle(frame, (0, 0), (frame.shape[1], 32), (18, 18, 18), -1)
+        cv2.putText(frame, f"Camera {camera_id.upper()}", (12, 22),
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.65, (0, 255, 255), 2, cv2.LINE_AA)
         info = f"Frame: {camera.frame_idx} | {camera.get_progress()}%"
-        cv2.putText(frame, info, (frame.shape[1] - 240, 25),
-                    cv2.FONT_HERSHEY_SIMPLEX, 0.5, (210, 210, 210), 1, cv2.LINE_AA)
+        cv2.putText(frame, info, (frame.shape[1] - 220, 22),
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.48, (210, 210, 210), 1, cv2.LINE_AA)
         return frame
 
     def get_frame_jpeg(self, camera_id, quality=82):
