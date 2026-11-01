@@ -1,0 +1,305 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/29.6.6 Chrome/144.0.7559.236 Electron/40.8.4 Safari/537.36">
+  <diagram name="Class-Diagram-Fixed" id="Tq3pJudy1naVsSsoYayq">
+    <mxGraphModel dx="1690" dy="1273" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="x3swzGPuUjWLbwiIGflP-1" parent="1" style="swimlane;fontStyle=1;align=center;startSize=26;container=0;collapsible=0;fontFamily=Verdana;fontSize=15;strokeWidth=3;" value="Camera" vertex="1">
+          <mxGeometry height="285" width="268" x="138" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="x3swzGPuUjWLbwiIGflP-5" parent="1" style="swimlane;fontStyle=1;align=center;startSize=26;container=0;collapsible=0;fontFamily=Verdana;fontSize=15;strokeWidth=3;" value="Frame" vertex="1">
+          <mxGeometry height="285" width="276" x="837" y="38" as="geometry" />
+        </mxCell>
+        <mxCell id="x3swzGPuUjWLbwiIGflP-9" parent="1" style="swimlane;fontStyle=1;align=center;startSize=26;container=0;collapsible=0;fontFamily=Verdana;fontSize=15;strokeWidth=3;" value="Vehicle Detector" vertex="1">
+          <mxGeometry height="285" width="281" x="1252" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="x3swzGPuUjWLbwiIGflP-13" parent="1" style="swimlane;fontStyle=1;align=center;startSize=26;container=0;collapsible=0;fontFamily=Verdana;fontSize=15;strokeWidth=3;" value="Bounding Box" vertex="1">
+          <mxGeometry height="283" width="299" x="1706" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="x3swzGPuUjWLbwiIGflP-17" parent="1" style="swimlane;fontStyle=1;align=center;startSize=26;container=0;collapsible=0;fontFamily=Verdana;fontSize=15;strokeWidth=3;" value="Tracker" vertex="1">
+          <mxGeometry height="275" width="371" x="1671" y="1095" as="geometry" />
+        </mxCell>
+        <mxCell id="x3swzGPuUjWLbwiIGflP-21" parent="1" style="swimlane;fontStyle=1;align=center;startSize=26;container=0;collapsible=0;fontFamily=Verdana;fontSize=15;strokeWidth=3;" value="Feature Extractor" vertex="1">
+          <mxGeometry height="315.5" width="344" x="1239" y="361" as="geometry" />
+        </mxCell>
+        <mxCell id="x3swzGPuUjWLbwiIGflP-25" parent="1" style="swimlane;fontStyle=1;align=center;startSize=26;container=0;collapsible=0;fontFamily=Verdana;fontSize=15;strokeWidth=3;" value="Camera Scorer" vertex="1">
+          <mxGeometry height="286" width="293" x="22" y="378" as="geometry" />
+        </mxCell>
+        <mxCell id="x3swzGPuUjWLbwiIGflP-29" parent="1" style="swimlane;fontStyle=1;align=center;startSize=26;container=0;collapsible=0;fontFamily=Verdana;fontSize=15;strokeWidth=3;" value="ReID Matcher" vertex="1">
+          <mxGeometry height="292" width="371" x="1673" y="364" as="geometry" />
+        </mxCell>
+        <mxCell id="x3swzGPuUjWLbwiIGflP-33" parent="1" style="swimlane;fontStyle=1;align=center;startSize=26;container=0;collapsible=0;fontFamily=Verdana;fontSize=15;strokeWidth=3;" value="Vehicle" vertex="1">
+          <mxGeometry height="295" width="373" x="1669" y="716" as="geometry" />
+        </mxCell>
+        <mxCell id="x3swzGPuUjWLbwiIGflP-37" parent="1" style="swimlane;fontStyle=1;align=center;startSize=26;container=0;collapsible=0;fontFamily=Verdana;fontSize=15;strokeWidth=3;" value="Camera Switcher" vertex="1">
+          <mxGeometry height="280" width="261" x="369" y="375" as="geometry" />
+        </mxCell>
+        <mxCell id="x3swzGPuUjWLbwiIGflP-41" parent="1" style="swimlane;fontStyle=1;align=center;startSize=26;container=0;collapsible=0;fontFamily=Verdana;fontSize=15;strokeWidth=3;" value="Live View UI" vertex="1">
+          <mxGeometry height="276" width="308" x="331" y="753" as="geometry" />
+        </mxCell>
+        <mxCell id="x3swzGPuUjWLbwiIGflP-45" parent="1" style="swimlane;fontStyle=1;align=center;startSize=26;container=0;collapsible=0;fontFamily=Verdana;fontSize=15;strokeWidth=3;" value="Clip Storage" vertex="1">
+          <mxGeometry height="292" width="293" x="851" y="378" as="geometry" />
+        </mxCell>
+        <mxCell id="x3swzGPuUjWLbwiIGflP-49" parent="1" style="swimlane;fontStyle=1;align=center;startSize=26;container=0;collapsible=0;fontFamily=Verdana;fontSize=15;strokeWidth=3;" value="Video Stitcher" vertex="1">
+          <mxGeometry height="295" width="375" x="766" y="761" as="geometry" />
+        </mxCell>
+        <mxCell id="x3swzGPuUjWLbwiIGflP-53" parent="1" style="swimlane;fontStyle=1;align=center;startSize=26;container=0;collapsible=0;fontFamily=Verdana;fontSize=15;strokeWidth=3;" value="Email Delivery" vertex="1">
+          <mxGeometry height="285" width="370" x="1228" y="761" as="geometry" />
+        </mxCell>
+        <mxCell id="XbX4xRWpYHzu22PNckVx-1" edge="1" parent="1" source="x3swzGPuUjWLbwiIGflP-2" style="endArrow=open;html=1;endSize=12;startArrow=diamondThin;startSize=14;startFill=1;edgeStyle=orthogonalEdgeStyle;align=left;verticalAlign=bottom;rounded=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;fontStyle=0;strokeWidth=3;" target="x3swzGPuUjWLbwiIGflP-6" value="1">
+          <mxGeometry relative="1" x="-1" y="3" as="geometry">
+            <Array as="points" />
+            <mxPoint x="795" y="97" as="sourcePoint" />
+            <mxPoint x="798" y="157" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="XbX4xRWpYHzu22PNckVx-10" edge="1" parent="1" source="x3swzGPuUjWLbwiIGflP-14" style="html=1;verticalAlign=bottom;labelBackgroundColor=none;endArrow=block;endFill=1;dashed=1;rounded=0;exitX=0;exitY=0.75;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontStyle=0;strokeWidth=3;" target="x3swzGPuUjWLbwiIGflP-21" value="">
+          <mxGeometry relative="1" width="160" as="geometry">
+            <Array as="points">
+              <mxPoint x="1594" y="159" />
+              <mxPoint x="1589" y="334" />
+              <mxPoint x="1413" y="334" />
+            </Array>
+            <mxPoint x="1423" y="263" as="sourcePoint" />
+            <mxPoint x="907" y="297" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="XbX4xRWpYHzu22PNckVx-11" edge="1" parent="1" source="x3swzGPuUjWLbwiIGflP-6" style="html=1;verticalAlign=bottom;labelBackgroundColor=none;endArrow=block;endFill=1;dashed=1;rounded=0;exitX=1;exitY=0.75;exitDx=0;exitDy=0;entryX=-0.002;entryY=0.895;entryDx=0;entryDy=0;entryPerimeter=0;fontStyle=0;strokeWidth=3;" target="x3swzGPuUjWLbwiIGflP-10" value="">
+          <mxGeometry relative="1" width="160" as="geometry">
+            <mxPoint x="1710" y="222" as="sourcePoint" />
+            <mxPoint x="532" y="390" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="XbX4xRWpYHzu22PNckVx-12" edge="1" parent="1" source="x3swzGPuUjWLbwiIGflP-22" style="html=1;verticalAlign=bottom;labelBackgroundColor=none;endArrow=block;endFill=1;dashed=1;rounded=0;exitX=1;exitY=0.25;exitDx=0;exitDy=0;entryX=0;entryY=0.25;entryDx=0;entryDy=0;fontStyle=0;strokeWidth=3;" target="x3swzGPuUjWLbwiIGflP-30" value="">
+          <mxGeometry relative="1" width="160" as="geometry">
+            <Array as="points" />
+            <mxPoint x="1024" y="418" as="sourcePoint" />
+            <mxPoint x="1273" y="413" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="XbX4xRWpYHzu22PNckVx-13" edge="1" parent="1" source="x3swzGPuUjWLbwiIGflP-32" style="html=1;verticalAlign=bottom;labelBackgroundColor=none;endArrow=block;endFill=1;rounded=0;exitX=0.571;exitY=1.026;exitDx=0;exitDy=0;entryX=0.576;entryY=0.012;entryDx=0;entryDy=0;entryPerimeter=0;exitPerimeter=0;fontStyle=0;strokeWidth=3;" target="x3swzGPuUjWLbwiIGflP-33" value="">
+          <mxGeometry relative="1" width="160" as="geometry">
+            <mxPoint x="1148" y="763" as="sourcePoint" />
+            <mxPoint x="1308" y="763" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="XbX4xRWpYHzu22PNckVx-14" edge="1" parent="1" style="html=1;verticalAlign=bottom;labelBackgroundColor=none;endArrow=block;endFill=1;rounded=0;entryX=0;entryY=0.25;entryDx=0;entryDy=0;fontStyle=0;strokeWidth=3;" target="x3swzGPuUjWLbwiIGflP-14" value="">
+          <mxGeometry relative="1" width="160" as="geometry">
+            <mxPoint x="1537" y="85" as="sourcePoint" />
+            <mxPoint x="1791" y="441" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="XbX4xRWpYHzu22PNckVx-15" edge="1" parent="1" source="x3swzGPuUjWLbwiIGflP-17" style="html=1;verticalAlign=bottom;labelBackgroundColor=none;endArrow=block;endFill=1;rounded=0;exitX=0.599;exitY=0.006;exitDx=0;exitDy=0;entryX=0.605;entryY=0.977;entryDx=0;entryDy=0;entryPerimeter=0;exitPerimeter=0;fontStyle=0;strokeWidth=3;" target="x3swzGPuUjWLbwiIGflP-36" value="">
+          <mxGeometry relative="1" width="160" as="geometry">
+            <mxPoint x="1163" y="789" as="sourcePoint" />
+            <mxPoint x="1409" y="782" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="XbX4xRWpYHzu22PNckVx-16" edge="1" parent="1" source="x3swzGPuUjWLbwiIGflP-25" style="html=1;verticalAlign=bottom;labelBackgroundColor=none;endArrow=block;endFill=1;rounded=0;exitX=0.4;exitY=0.01;exitDx=0;exitDy=0;entryX=0.416;entryY=1.038;entryDx=0;entryDy=0;exitPerimeter=0;entryPerimeter=0;fontStyle=0;strokeWidth=3;" target="x3swzGPuUjWLbwiIGflP-4" value="">
+          <mxGeometry relative="1" width="160" as="geometry">
+            <Array as="points" />
+            <mxPoint x="1163" y="448" as="sourcePoint" />
+            <mxPoint x="1409" y="441" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="XbX4xRWpYHzu22PNckVx-17" edge="1" parent="1" style="html=1;verticalAlign=bottom;labelBackgroundColor=none;endArrow=block;endFill=1;rounded=0;entryX=0.953;entryY=1.052;entryDx=0;entryDy=0;entryPerimeter=0;fontStyle=0;strokeWidth=3;" target="x3swzGPuUjWLbwiIGflP-4" value="">
+          <mxGeometry relative="1" width="160" as="geometry">
+            <Array as="points" />
+            <mxPoint x="387" y="379" as="sourcePoint" />
+            <mxPoint x="140" y="240" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="XbX4xRWpYHzu22PNckVx-18" edge="1" parent="1" style="html=1;verticalAlign=bottom;labelBackgroundColor=none;endArrow=block;endFill=1;dashed=1;rounded=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontStyle=0;strokeWidth=3;" target="x3swzGPuUjWLbwiIGflP-41" value="">
+          <mxGeometry relative="1" width="160" as="geometry">
+            <Array as="points" />
+            <mxPoint x="485" y="660" as="sourcePoint" />
+            <mxPoint x="1112" y="422" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="XbX4xRWpYHzu22PNckVx-19" edge="1" parent="1" source="x3swzGPuUjWLbwiIGflP-42" style="html=1;verticalAlign=bottom;labelBackgroundColor=none;endArrow=block;endFill=1;dashed=1;rounded=0;exitX=0;exitY=0;exitDx=0;exitDy=0;entryX=0.25;entryY=0;entryDx=0;entryDy=0;fontStyle=0;strokeWidth=3;" target="x3swzGPuUjWLbwiIGflP-5" value="">
+          <mxGeometry relative="1" width="160" as="geometry">
+            <Array as="points">
+              <mxPoint x="-57" y="776" />
+              <mxPoint x="-57" y="8" />
+              <mxPoint x="524" y="4" />
+              <mxPoint x="906" y="4" />
+            </Array>
+            <mxPoint x="420" y="613" as="sourcePoint" />
+            <mxPoint x="150" y="760" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="XbX4xRWpYHzu22PNckVx-20" edge="1" parent="1" source="x3swzGPuUjWLbwiIGflP-8" style="endArrow=diamondThin;endFill=0;endSize=24;html=1;rounded=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;exitX=0.588;exitY=0.954;exitDx=0;exitDy=0;exitPerimeter=0;fontStyle=0;strokeWidth=3;" target="x3swzGPuUjWLbwiIGflP-45" value="">
+          <mxGeometry relative="1" width="160" as="geometry">
+            <Array as="points" />
+            <mxPoint x="232" y="718" as="sourcePoint" />
+            <mxPoint x="392" y="718" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="XbX4xRWpYHzu22PNckVx-21" edge="1" parent="1" source="x3swzGPuUjWLbwiIGflP-45" style="html=1;verticalAlign=bottom;labelBackgroundColor=none;endArrow=block;endFill=1;rounded=0;exitX=0.061;exitY=-0.003;exitDx=0;exitDy=0;exitPerimeter=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;fontStyle=0;strokeWidth=3;" target="x3swzGPuUjWLbwiIGflP-4" value="">
+          <mxGeometry relative="1" width="160" as="geometry">
+            <Array as="points">
+              <mxPoint x="869" y="349" />
+              <mxPoint x="643" y="322" />
+              <mxPoint x="643" y="248" />
+            </Array>
+            <mxPoint x="398" y="400" as="sourcePoint" />
+            <mxPoint x="313" y="268" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="XbX4xRWpYHzu22PNckVx-22" edge="1" parent="1" source="x3swzGPuUjWLbwiIGflP-49" style="html=1;verticalAlign=bottom;labelBackgroundColor=none;endArrow=block;endFill=1;dashed=1;rounded=0;exitX=0.618;exitY=-0.01;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;exitPerimeter=0;fontStyle=0;strokeWidth=3;" target="x3swzGPuUjWLbwiIGflP-48" value="">
+          <mxGeometry relative="1" width="160" as="geometry">
+            <Array as="points" />
+            <mxPoint x="957" y="428" as="sourcePoint" />
+            <mxPoint x="1112" y="422" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="XbX4xRWpYHzu22PNckVx-23" edge="1" parent="1" source="x3swzGPuUjWLbwiIGflP-52" style="html=1;verticalAlign=bottom;labelBackgroundColor=none;endArrow=block;endFill=1;dashed=1;rounded=0;exitX=0.176;exitY=1.091;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.453;entryY=0.016;entryDx=0;entryDy=0;entryPerimeter=0;fontStyle=0;strokeWidth=3;" target="x3swzGPuUjWLbwiIGflP-5" value="">
+          <mxGeometry relative="1" width="160" as="geometry">
+            <Array as="points">
+              <mxPoint x="832" y="1117" />
+              <mxPoint x="-93" y="1100" />
+              <mxPoint x="-83" y="-17" />
+              <mxPoint x="580" y="-13" />
+              <mxPoint x="962" y="-13" />
+            </Array>
+            <mxPoint x="739" y="744" as="sourcePoint" />
+            <mxPoint x="570" y="831" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="XbX4xRWpYHzu22PNckVx-24" edge="1" parent="1" source="x3swzGPuUjWLbwiIGflP-54" style="html=1;verticalAlign=bottom;labelBackgroundColor=none;endArrow=block;endFill=1;dashed=1;rounded=0;entryX=1.012;entryY=0.602;entryDx=0;entryDy=0;exitX=-0.007;exitY=0.665;exitDx=0;exitDy=0;exitPerimeter=0;fontStyle=0;strokeWidth=3;entryPerimeter=0;" target="x3swzGPuUjWLbwiIGflP-50" value="">
+          <mxGeometry relative="1" width="160" as="geometry">
+            <Array as="points" />
+            <mxPoint x="1640" y="865" as="sourcePoint" />
+            <mxPoint x="879" y="816" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="x3swzGPuUjWLbwiIGflP-2" parent="1" style="text;align=left;verticalAlign=top;spacingLeft=4;fontFamily=Verdana;fontSize=10;html=1;container=0;fontStyle=0;strokeWidth=3;" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;b&gt;- cameraId: String&lt;br&gt;- cameraName: String&lt;br&gt;&lt;/b&gt;&lt;/font&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;b&gt;- resolution: int&lt;br&gt;&lt;/b&gt;&lt;/font&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;b&gt;- position: String&lt;br&gt;&lt;/b&gt;&lt;/font&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;b&gt;- isActive: boolean&lt;br&gt;&lt;/b&gt;&lt;/font&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;b&gt;- rtspUrl: String&lt;/b&gt;&lt;/font&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="153" width="265" x="138" y="56" as="geometry" />
+        </mxCell>
+        <mxCell id="x3swzGPuUjWLbwiIGflP-3" parent="1" style="line;container=0;fontStyle=0;strokeWidth=3;" value="" vertex="1">
+          <mxGeometry height="14" width="267" x="138" y="206" as="geometry" />
+        </mxCell>
+        <mxCell id="x3swzGPuUjWLbwiIGflP-4" parent="1" style="text;align=left;verticalAlign=top;spacingLeft=4;fontFamily=Verdana;fontSize=10;html=1;container=0;fontStyle=0;strokeWidth=3;" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;b style=&quot;&quot;&gt;+ captureFrame(): Frame&lt;/b&gt;&lt;/font&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;b&gt;+ getResolutionScore(): float&lt;br&gt;&lt;/b&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;b style=&quot;&quot;&gt;+ activate(): void&lt;br&gt;+ deactivate(): void&lt;/b&gt;&lt;/font&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="100" width="268" x="138" y="213" as="geometry" />
+        </mxCell>
+        <mxCell id="x3swzGPuUjWLbwiIGflP-6" parent="1" style="text;align=left;verticalAlign=top;spacingLeft=4;fontFamily=Verdana;fontSize=10;html=1;container=0;fontStyle=0;strokeWidth=3;" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;b style=&quot;&quot;&gt;- frameId: int&lt;/b&gt;&lt;/font&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;b&gt;- cameraId: String&lt;br&gt;&lt;/b&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;b&gt;- timestamp: datetime&lt;br&gt;&lt;/b&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;b&gt;- imageData: ndarray&lt;br&gt;&lt;/b&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;b style=&quot;&quot;&gt;- width: int&lt;br&gt;- height: int&lt;/b&gt;&lt;/font&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="155" width="276" x="837" y="64" as="geometry" />
+        </mxCell>
+        <mxCell id="x3swzGPuUjWLbwiIGflP-7" parent="1" style="line;container=0;fontStyle=0;strokeWidth=3;" value="" vertex="1">
+          <mxGeometry height="10" width="271" x="840" y="218" as="geometry" />
+        </mxCell>
+        <mxCell id="x3swzGPuUjWLbwiIGflP-8" parent="1" style="text;align=left;verticalAlign=top;spacingLeft=4;fontFamily=Verdana;fontSize=10;html=1;container=0;fontStyle=0;strokeWidth=3;" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;b style=&quot;&quot;&gt;+ getImageData(): ndarray&lt;/b&gt;&lt;/font&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;b&gt;+ getTimestamp(): datetime&lt;br&gt;&lt;/b&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;b style=&quot;&quot;&gt;+ resize(): Frame&lt;/b&gt;&lt;/font&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="88" width="269" x="840" y="235" as="geometry" />
+        </mxCell>
+        <mxCell id="x3swzGPuUjWLbwiIGflP-10" parent="1" style="text;align=left;verticalAlign=top;spacingLeft=4;fontFamily=Verdana;fontSize=10;html=1;container=0;fontStyle=0;strokeWidth=3;" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;b&gt;- model: name&lt;/b&gt;&lt;/font&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;b&gt;- confidenceThreshold: float&lt;br&gt;&lt;/b&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;b&gt;- classFilter: List&lt;br&gt;&lt;/b&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;b&gt;- frameBuffer: Queue&lt;br&gt;&lt;/b&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;b&gt;- isDetected: boolean&lt;/b&gt;&lt;/font&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="143" width="267" x="1252" y="56" as="geometry" />
+        </mxCell>
+        <mxCell id="x3swzGPuUjWLbwiIGflP-11" parent="1" style="line;container=0;fontStyle=0;strokeWidth=3;" value="" vertex="1">
+          <mxGeometry height="10" width="281" x="1252" y="197" as="geometry" />
+        </mxCell>
+        <mxCell id="x3swzGPuUjWLbwiIGflP-12" parent="1" style="text;align=left;verticalAlign=top;spacingLeft=4;fontFamily=Verdana;fontSize=10;html=1;container=0;fontStyle=0;strokeWidth=3;" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;b style=&quot;&quot;&gt;+ detect(frame: Frame): List&lt;br&gt;&lt;/b&gt;&lt;/font&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;b&gt;+ isVehicleDetected(): boolean&lt;br&gt;&lt;/b&gt;&lt;/font&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;b&gt;+ waitForNextFrame(): Frame&lt;/b&gt;&lt;/font&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;b style=&quot;&quot;&gt;+ getBoundingBoxes(): List&lt;/b&gt;&lt;/font&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="113" width="279" x="1252" y="202" as="geometry" />
+        </mxCell>
+        <mxCell id="x3swzGPuUjWLbwiIGflP-14" parent="1" style="text;align=left;verticalAlign=top;spacingLeft=4;fontFamily=Verdana;fontSize=10;html=1;container=0;fontStyle=0;strokeWidth=3;" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;b style=&quot;&quot;&gt;- x: int&lt;/b&gt;&lt;/font&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;b&gt;- y: int&lt;br&gt;&lt;/b&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;b&gt;- width: int&lt;br&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;- height: int&lt;/span&gt;&lt;/b&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;b style=&quot;&quot;&gt;- confidence: float&lt;br&gt;- classLabel: String&lt;/b&gt;&lt;/font&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="137" width="283" x="1706" y="56" as="geometry" />
+        </mxCell>
+        <mxCell id="x3swzGPuUjWLbwiIGflP-15" parent="1" style="line;container=0;fontStyle=0;strokeWidth=3;" value="" vertex="1">
+          <mxGeometry height="27" width="294" x="1710" y="189" as="geometry" />
+        </mxCell>
+        <mxCell id="x3swzGPuUjWLbwiIGflP-16" parent="1" style="text;align=left;verticalAlign=top;spacingLeft=4;fontFamily=Verdana;fontSize=10;html=1;container=0;fontStyle=0;strokeWidth=3;" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;b style=&quot;&quot;&gt;+ getArea(): int&lt;/b&gt;&lt;/font&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;b&gt;+ getCenter(): Tuple&lt;br&gt;&lt;/b&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;b&gt;+ getResolutionScore(): float&lt;br&gt;&lt;/b&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;b style=&quot;&quot;&gt;+ overlaps(other: bbox): bool&lt;/b&gt;&lt;/font&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="112" width="299" x="1706" y="201" as="geometry" />
+        </mxCell>
+        <mxCell id="x3swzGPuUjWLbwiIGflP-18" parent="1" style="text;align=left;verticalAlign=top;spacingLeft=4;fontFamily=Verdana;fontSize=10;html=1;container=0;fontStyle=0;strokeWidth=3;" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;b style=&quot;&quot;&gt;- trackId: int&lt;/b&gt;&lt;/font&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;&lt;b&gt;- cameraId: String&lt;/b&gt;&lt;/span&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;b&gt;- kalmanFilter: KalmanFilter&lt;br&gt;&lt;/b&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;&lt;b&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;- hungarianMatcher: HungarianMatcher&lt;/font&gt;&lt;/b&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;b style=&quot;&quot;&gt;- trackHistory: List&lt;/b&gt;&lt;/font&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="125" width="368" x="1671" y="1120" as="geometry" />
+        </mxCell>
+        <mxCell id="x3swzGPuUjWLbwiIGflP-19" parent="1" style="line;container=0;fontStyle=0;strokeWidth=3;" value="" vertex="1">
+          <mxGeometry height="10" width="369" x="1671" y="1241" as="geometry" />
+        </mxCell>
+        <mxCell id="x3swzGPuUjWLbwiIGflP-20" parent="1" style="text;align=left;verticalAlign=top;spacingLeft=4;fontFamily=Verdana;fontSize=10;html=1;container=0;fontStyle=0;strokeWidth=3;" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;b style=&quot;&quot;&gt;+ assignTrackId(bbox): int&lt;/b&gt;&lt;/font&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;b&gt;+ updateTrack(bbox: BoundingBox): void&lt;br&gt;&lt;/b&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;b&gt;+ predictNextPosition(): BoundingBox&lt;br&gt;&lt;/b&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;b style=&quot;&quot;&gt;+ getTrackId(): int&lt;/b&gt;&lt;/font&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="117" width="369" x="1671" y="1248" as="geometry" />
+        </mxCell>
+        <mxCell id="x3swzGPuUjWLbwiIGflP-22" parent="1" style="text;align=left;verticalAlign=top;spacingLeft=4;fontFamily=Verdana;fontSize=10;html=1;container=0;fontStyle=0;strokeWidth=3;" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;b style=&quot;&quot;&gt;- model: ResNetIBN&lt;/b&gt;&lt;/font&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;b&gt;- embeddingSize: int&lt;br&gt;&lt;/b&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;b&gt;- colorHistogramBins: int&lt;br&gt;&lt;/b&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;b&gt;- device: String&lt;br&gt;&lt;/b&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;b style=&quot;&quot;&gt;- featureCache: Dict&lt;/b&gt;&lt;/font&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="155" width="347" x="1239" y="387" as="geometry" />
+        </mxCell>
+        <mxCell id="x3swzGPuUjWLbwiIGflP-23" parent="1" style="line;container=0;fontStyle=0;strokeWidth=3;" value="" vertex="1">
+          <mxGeometry height="10" width="348" x="1239" y="540.5" as="geometry" />
+        </mxCell>
+        <mxCell id="x3swzGPuUjWLbwiIGflP-24" parent="1" style="text;align=left;verticalAlign=top;spacingLeft=4;fontFamily=Verdana;fontSize=10;html=1;container=0;fontStyle=0;strokeWidth=3;" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;b style=&quot;&quot;&gt;+extractEmbedding():ndarray&lt;br&gt;&lt;/b&gt;&lt;/font&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;b&gt;+extractColorHistogram():ndarray&lt;br&gt;&lt;/b&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;b style=&quot;&quot;&gt;+ getFeatureVector(): ndarray&lt;/b&gt;&lt;/font&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="132" width="346" x="1239" y="543" as="geometry" />
+        </mxCell>
+        <mxCell id="x3swzGPuUjWLbwiIGflP-26" parent="1" style="text;align=left;verticalAlign=top;spacingLeft=4;fontFamily=Verdana;fontSize=10;html=1;container=0;fontStyle=0;strokeWidth=3;" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;b style=&quot;&quot;&gt;- activeCameras: List&lt;/b&gt;&lt;/font&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;b&gt;- scores: Dict&lt;/b&gt;&lt;/font&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;b&gt;- proximityWeight: float&lt;br&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;- resolutionWeight: float&lt;/span&gt;&lt;/b&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;b style=&quot;&quot;&gt;- coverageWeight: float&lt;/b&gt;&lt;/font&gt;&lt;/div&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="133" width="293" x="22" y="404" as="geometry" />
+        </mxCell>
+        <mxCell id="x3swzGPuUjWLbwiIGflP-27" parent="1" style="line;container=0;fontStyle=0;strokeWidth=3;" value="" vertex="1">
+          <mxGeometry height="10" width="287" x="27" y="533" as="geometry" />
+        </mxCell>
+        <mxCell id="x3swzGPuUjWLbwiIGflP-28" parent="1" style="text;align=left;verticalAlign=top;spacingLeft=4;fontFamily=Verdana;fontSize=10;html=1;container=0;fontStyle=0;strokeWidth=3;" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;b style=&quot;&quot;&gt;+ scoreAllCameras(bbox): Dict&lt;br&gt;&lt;/b&gt;&lt;/font&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;b&gt;+ selectBestCamera(): Camera&lt;br&gt;&lt;/b&gt;&lt;/font&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;b&gt;+ calculateProximityScore(): float&lt;br&gt;&lt;/b&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;b style=&quot;&quot;&gt;+ calculateResolutionScore(): float&lt;/b&gt;&lt;/font&gt;&lt;/div&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="113" width="286" x="22" y="551" as="geometry" />
+        </mxCell>
+        <mxCell id="x3swzGPuUjWLbwiIGflP-30" parent="1" style="text;align=left;verticalAlign=top;spacingLeft=4;fontFamily=Verdana;fontSize=10;html=1;container=0;fontStyle=0;strokeWidth=3;" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;b style=&quot;&quot;&gt;- globalIdRegistry: Dict&lt;/b&gt;&lt;/font&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;b&gt;- similarityThreshold: float&lt;br&gt;&lt;/b&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;b&gt;- nextGlobalId: int&lt;br&gt;&lt;/b&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;b style=&quot;&quot;&gt;- featureDatabase: List&lt;/b&gt;&lt;/font&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="109" width="371" x="1673" y="390" as="geometry" />
+        </mxCell>
+        <mxCell id="x3swzGPuUjWLbwiIGflP-31" parent="1" style="line;container=0;fontStyle=0;strokeWidth=3;" value="" vertex="1">
+          <mxGeometry height="10" width="369" x="1673" y="497" as="geometry" />
+        </mxCell>
+        <mxCell id="x3swzGPuUjWLbwiIGflP-32" parent="1" style="text;align=left;verticalAlign=top;spacingLeft=4;fontFamily=Verdana;fontSize=10;html=1;container=0;fontStyle=0;strokeWidth=3;" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;b style=&quot;&quot;&gt;+ matchVehicle(features: ndarray): boolean&lt;/b&gt;&lt;/font&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;b&gt;+ assignGlobalId(vehicle: Vehicle): int&lt;br&gt;&lt;/b&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;b&gt;+ assignNewGlobalId(vehicle: Vehicle): int&lt;br&gt;&lt;/b&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;b&gt;+ cosineSimilarity(a: ndarray, b: ndarray): float&lt;br&gt;&lt;/b&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;b style=&quot;&quot;&gt;+ updateRegistry(id: int, v: Vehicle): void&lt;/b&gt;&lt;/font&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="146" width="371" x="1673" y="510" as="geometry" />
+        </mxCell>
+        <mxCell id="x3swzGPuUjWLbwiIGflP-34" parent="1" style="text;align=left;verticalAlign=top;spacingLeft=4;fontFamily=Verdana;fontSize=10;html=1;container=0;fontStyle=0;strokeWidth=3;" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;b style=&quot;&quot;&gt;- globalVehicleId: int&lt;/b&gt;&lt;/font&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;b&gt;- localTrackId: int&lt;br&gt;&lt;/b&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;b&gt;- cameraId: String&lt;br&gt;&lt;/b&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;b&gt;- featureVector: ndarray&lt;br&gt;&lt;/b&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;b&gt;- boundingBox: BoundingBox&lt;br&gt;&lt;/b&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;b style=&quot;&quot;&gt;- isInNetwork: boolean&lt;/b&gt;&lt;/font&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="171" width="373" x="1669" y="742" as="geometry" />
+        </mxCell>
+        <mxCell id="x3swzGPuUjWLbwiIGflP-35" parent="1" style="line;container=0;fontStyle=0;strokeWidth=3;" value="" vertex="1">
+          <mxGeometry height="10" width="372" x="1664" y="915" as="geometry" />
+        </mxCell>
+        <mxCell id="x3swzGPuUjWLbwiIGflP-36" parent="1" style="text;align=left;verticalAlign=top;spacingLeft=4;fontFamily=Verdana;fontSize=10;html=1;container=0;fontStyle=0;strokeWidth=3;" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;b style=&quot;&quot;&gt;+ getGlobalId(): int&lt;/b&gt;&lt;/font&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;b&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;+ updatePosition(bbox): void&lt;/span&gt;&lt;/b&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;b style=&quot;&quot;&gt;+ isStillInNetwork(): boolean&lt;/b&gt;&lt;/font&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="86" width="371" x="1669" y="925" as="geometry" />
+        </mxCell>
+        <mxCell id="x3swzGPuUjWLbwiIGflP-38" parent="1" style="text;align=left;verticalAlign=top;spacingLeft=4;fontFamily=Verdana;fontSize=10;html=1;container=0;fontStyle=0;strokeWidth=3;" value="&lt;b&gt;&lt;font style=&quot;font-size: 12px;&quot;&gt;- currentCamera: Camera&lt;br&gt;- hysteresisThreshold: float&lt;br&gt;- switchFrameCount: int&lt;br&gt;- minFramesBeforeSwitch: int&lt;br&gt;- isCarInNetwork: boolean&lt;/font&gt;&lt;/b&gt;" vertex="1">
+          <mxGeometry height="80" width="230" x="370" y="404" as="geometry" />
+        </mxCell>
+        <mxCell id="x3swzGPuUjWLbwiIGflP-39" parent="1" style="line;container=0;fontStyle=0;strokeWidth=3;" value="" vertex="1">
+          <mxGeometry height="10" width="258" x="369" y="481" as="geometry" />
+        </mxCell>
+        <mxCell id="x3swzGPuUjWLbwiIGflP-40" parent="1" style="text;align=left;verticalAlign=top;spacingLeft=4;fontFamily=Verdana;fontSize=10;html=1;container=0;fontStyle=0;strokeWidth=3;" value="&lt;b&gt;&lt;font style=&quot;font-size: 12px;&quot;&gt;+ shouldSwitch(bestCam:): boolean&lt;br&gt;+ keepCurrentFeed(): void&lt;br&gt;+ smoothTransition(newCam:): void&lt;br&gt;+ isCarStillInNetwork(): boolean&lt;br&gt;+ getCurrentCamera(): Camera&lt;/font&gt;&lt;/b&gt;" vertex="1">
+          <mxGeometry height="165" width="261" x="369" y="488" as="geometry" />
+        </mxCell>
+        <mxCell id="x3swzGPuUjWLbwiIGflP-42" parent="1" style="text;align=left;verticalAlign=top;spacingLeft=4;fontFamily=Verdana;fontSize=10;html=1;container=0;fontStyle=0;strokeWidth=3;" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;b style=&quot;&quot;&gt;- activeCamera: Camera&lt;br&gt;- currentFeed: Frame&lt;br&gt;&lt;/b&gt;&lt;/font&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;b&gt;- vehicleOverlays: List&lt;br&gt;&lt;/b&gt;&lt;/font&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;b&gt;- displayResolution: Tuple&lt;br&gt;&lt;/b&gt;&lt;/font&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;b style=&quot;&quot;&gt;- isLiveTracking: boolean&lt;/b&gt;&lt;/font&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="124" width="308" x="331" y="779" as="geometry" />
+        </mxCell>
+        <mxCell id="x3swzGPuUjWLbwiIGflP-43" parent="1" style="line;container=0;fontStyle=0;strokeWidth=3;" value="" vertex="1">
+          <mxGeometry height="10" width="307" x="331" y="903" as="geometry" />
+        </mxCell>
+        <mxCell id="x3swzGPuUjWLbwiIGflP-44" parent="1" style="text;align=left;verticalAlign=top;spacingLeft=4;fontFamily=Verdana;fontSize=10;html=1;container=0;fontStyle=0;strokeWidth=3;" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;b style=&quot;&quot;&gt;+ updateLiveView(Camera): void&lt;br&gt;&lt;/b&gt;&lt;/font&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;b&gt;+ displayBoundingBoxes(List): void&lt;br&gt;&lt;/b&gt;&lt;/font&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;b&gt;+ continueLiveTracking(): void&lt;/b&gt;&lt;/font&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;b style=&quot;&quot;&gt;+ switchCameraFeed(newCam:): void&lt;/b&gt;&lt;/font&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="115" width="303" x="331" y="913" as="geometry" />
+        </mxCell>
+        <mxCell id="x3swzGPuUjWLbwiIGflP-46" parent="1" style="text;align=left;verticalAlign=top;spacingLeft=4;fontFamily=Verdana;fontSize=10;html=1;container=0;fontStyle=0;strokeWidth=3;" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;b style=&quot;&quot;&gt;- clips: List&lt;/b&gt;&lt;/font&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;b&gt;- storagePath: String&lt;br&gt;&lt;/b&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;b&gt;- vehicleId: int&lt;br&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;- cameraId: String&lt;/span&gt;&lt;/b&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;b&gt;- startTime: datetime&lt;br&gt;&lt;/b&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;b style=&quot;&quot;&gt;- endTime: datetime&lt;/b&gt;&lt;/font&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="162" width="294" x="850" y="404" as="geometry" />
+        </mxCell>
+        <mxCell id="x3swzGPuUjWLbwiIGflP-47" parent="1" style="line;container=0;fontStyle=0;strokeWidth=3;" value="" vertex="1">
+          <mxGeometry height="10" width="293" x="851" y="559" as="geometry" />
+        </mxCell>
+        <mxCell id="x3swzGPuUjWLbwiIGflP-48" parent="1" style="text;align=left;verticalAlign=top;spacingLeft=4;fontFamily=Verdana;fontSize=10;html=1;container=0;fontStyle=0;strokeWidth=3;" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;b style=&quot;&quot;&gt;+ saveClip(): void&lt;br&gt;&lt;/b&gt;&lt;/font&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;b&gt;+ getAllClips(): List&lt;/b&gt;&lt;/font&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;b style=&quot;&quot;&gt;+ getClipsByVehicleId(id: int): List&lt;/b&gt;&lt;/font&gt;&lt;/div&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="93" width="290" x="851" y="573" as="geometry" />
+        </mxCell>
+        <mxCell id="x3swzGPuUjWLbwiIGflP-50" parent="1" style="text;align=left;verticalAlign=top;spacingLeft=4;fontFamily=Verdana;fontSize=10;html=1;container=0;fontStyle=0;strokeWidth=3;" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;b style=&quot;&quot;&gt;- ffmpegPath: String&lt;/b&gt;&lt;/font&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;b&gt;- outputFormat: String&lt;br&gt;&lt;/b&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;b&gt;- outputPath: String&lt;br&gt;&lt;/b&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;b&gt;- clips: List&lt;br&gt;&lt;/b&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;b style=&quot;&quot;&gt;- isRequested: boolean&lt;/b&gt;&lt;/font&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="144" width="375" x="766" y="787" as="geometry" />
+        </mxCell>
+        <mxCell id="x3swzGPuUjWLbwiIGflP-51" parent="1" style="line;container=0;fontStyle=0;strokeWidth=3;" value="" vertex="1">
+          <mxGeometry height="10" width="375" x="766" y="931" as="geometry" />
+        </mxCell>
+        <mxCell id="x3swzGPuUjWLbwiIGflP-52" parent="1" style="text;align=left;verticalAlign=top;spacingLeft=4;fontFamily=Verdana;fontSize=10;html=1;container=0;fontStyle=0;strokeWidth=3;" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;b style=&quot;&quot;&gt;+ stitchAllClips(clips: List): String&lt;/b&gt;&lt;/font&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;b&gt;+ isFullVideoRequested(): boolean&lt;br&gt;&lt;/b&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;b&gt;+ setOutputPath(path: String): void&lt;br&gt;&lt;/b&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;b style=&quot;&quot;&gt;+ getOutputFilePath(): String&lt;/b&gt;&lt;/font&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="110" width="374" x="766" y="944" as="geometry" />
+        </mxCell>
+        <mxCell id="x3swzGPuUjWLbwiIGflP-54" parent="1" style="text;align=left;verticalAlign=top;spacingLeft=4;fontFamily=Verdana;fontSize=10;html=1;container=0;fontStyle=0;strokeWidth=3;" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;b style=&quot;&quot;&gt;- smtpServer: String&lt;/b&gt;&lt;/font&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;b&gt;- smtpPort: int&lt;/b&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;&lt;b&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;- senderEmail: String&lt;/font&gt;&lt;/b&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;b&gt;- recipientEmail: String&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;&lt;br&gt;&lt;/span&gt;&lt;/b&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;&lt;b style=&quot;&quot;&gt;- videoFilePath: String&lt;/b&gt;&lt;/span&gt;&lt;/font&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="127" width="367" x="1228" y="787" as="geometry" />
+        </mxCell>
+        <mxCell id="x3swzGPuUjWLbwiIGflP-55" parent="1" style="line;container=0;fontStyle=0;strokeWidth=3;" value="" vertex="1">
+          <mxGeometry height="10" width="367" x="1229" y="912" as="geometry" />
+        </mxCell>
+        <mxCell id="x3swzGPuUjWLbwiIGflP-56" parent="1" style="text;align=left;verticalAlign=top;spacingLeft=4;fontFamily=Verdana;fontSize=10;html=1;container=0;fontStyle=0;strokeWidth=3;" value="&lt;font style=&quot;font-size: 12px;&quot;&gt;&lt;b&gt;+ sendCompiledVideo(filePath:): boolean&lt;/b&gt;&lt;/font&gt;&lt;div&gt;&lt;font style=&quot;font-size: 12px;&quot;&gt;&lt;b&gt;+ attachVideo(filePath: String): void&lt;br&gt;&lt;/b&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 12px;&quot;&gt;&lt;b&gt;+ setRecipient(email: String): void&lt;br&gt;&lt;/b&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 12px;&quot;&gt;&lt;b&gt;+ deliver(): boolean&lt;/b&gt;&lt;/font&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="127" width="370" x="1229" y="917" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
