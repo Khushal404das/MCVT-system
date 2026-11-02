@@ -325,12 +325,20 @@ class MultiCameraProcessor:
                     bboxes.append(bbox)
                     class_names.append(cls_name)
 
-                    # Smart feature caching: reuse feature if track matches
+                    # Smart feature caching: reuse feature if track matches spatially
                     matched_feat = None
                     matched_color = None
                     with self._track_locks[camera_id]:
                         for trk in tracker.tracks.values():
-                            if tracker._compute_iou(trk.predict_next_position(), bbox) >= 0.35:
+                            pred = trk.predict_next_position()
+                            iou = tracker._compute_iou(pred, bbox)
+                            tc_x = (pred[0] + pred[2]) / 2.0
+                            tc_y = (pred[1] + pred[3]) / 2.0
+                            dc_x = (bbox[0] + bbox[2]) / 2.0
+                            dc_y = (bbox[1] + bbox[3]) / 2.0
+                            diag = max(20.0, np.sqrt((bbox[2] - bbox[0])**2 + (bbox[3] - bbox[1])**2))
+                            dist = np.sqrt((tc_x - dc_x)**2 + (tc_y - dc_y)**2)
+                            if iou >= 0.20 or dist < (1.5 * diag):
                                 matched_feat = trk.feature
                                 matched_color = trk.color_name
                                 break

@@ -124,10 +124,39 @@ class VehicleDetector:
                         'center': (cx, cy)
                     })
 
-            return detections
+            # Class-agnostic NMS to eliminate duplicate boxes for the same vehicle
+            return self._apply_nms(detections, iou_thresh=0.45)
         except Exception as e:
             print(f"[VehicleDetector] Error in YOLO detection: {e}")
             return self._detect_fallback(frame)
+
+
+    @staticmethod
+    def _apply_nms(detections, iou_thresh=0.45):
+        """Class-agnostic Non-Maximum Suppression."""
+        if len(detections) <= 1:
+            return detections
+        dets = sorted(detections, key=lambda d: d.get('confidence', 0), reverse=True)
+        kept = []
+        while dets:
+            best = dets.pop(0)
+            kept.append(best)
+            b_box = best['bbox']
+            remaining = []
+            for d in dets:
+                d_box = d['bbox']
+                x1 = max(b_box[0], d_box[0])
+                y1 = max(b_box[1], d_box[1])
+                x2 = min(b_box[2], d_box[2])
+                y2 = min(b_box[3], d_box[3])
+                inter = max(0, x2 - x1) * max(0, y2 - y1)
+                a1 = (b_box[2] - b_box[0]) * (b_box[3] - b_box[1])
+                a2 = (d_box[2] - d_box[0]) * (d_box[3] - d_box[1])
+                iou = inter / max(a1 + a2 - inter, 1e-6)
+                if iou < iou_thresh:
+                    remaining.append(d)
+            dets = remaining
+        return kept
 
     def _detect_fallback(self, frame):
         """Fallback detector using OpenCV MOG2 and contour filtering."""
