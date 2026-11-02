@@ -78,7 +78,7 @@ class VehicleDetector:
     def _detect_yolo(self, frame):
         """Detect using YOLOv8."""
         try:
-            results = self.model(frame, conf=self.confidence, device=self.device, verbose=False)
+            results = self.model(frame, imgsz=480, conf=self.confidence, device=self.device, verbose=False)
             detections = []
 
             for result in results:

@@ -18,32 +18,49 @@ class Track:
 
     def __init__(self, track_id, bbox, feature, class_name, color_name, frame_idx):
         self.track_id = track_id
-        self.bbox = bbox  # [x1, y1, x2, y2]
-        self.feature = feature  # Appearance feature vector
+        self.bbox = list(bbox)          # [x1, y1, x2, y2] — always last real detection
+        self.anchor_bbox = list(bbox)   # bbox at last confirmed detection (for extrapolation)
+        self.velocity = [0.0, 0.0, 0.0, 0.0]   # [dx, dy, dx2, dy2] per frame
+        self.frames_since_detect = 0    # playback frames since last real detection
+        self.feature = feature          # Appearance feature vector
         self.feature_history = [feature]  # Keep history for averaging
         self.class_name = class_name
         self.class_counts = {class_name: 1} if class_name else {}
         self.color_name = color_name
         # Sliding window of recent color observations (last 15 frames)
-        # Keeps color label fresh as vehicle approaches / changes illumination.
         self.color_window = deque([color_name] if (color_name and color_name.lower() != 'unknown') else [], maxlen=15)
         self.frame_idx = frame_idx
         self.last_seen = frame_idx
-        self.age = 0  # Frames since creation
-        self.hits = 1  # Number of successful matches
+        self.age = 0              # Frames since creation
+        self.hits = 1             # Number of successful matches
         self.time_since_update = 0
-        self.positions = [(bbox, frame_idx)]  # Position history
+        self.positions = [(list(bbox), frame_idx)]  # Position history
         self.is_confirmed = False
-        self.global_id = None  # Assigned during cross-camera matching
+        self.global_id = None     # Assigned during cross-camera matching
 
     def update(self, bbox, feature, class_name=None, color_name=None, frame_idx=None):
-        """Update track with new detection."""
-        self.bbox = bbox
+        """Update track with new real detection — resets anchor and velocity."""
+        # Compute velocity from last anchor to this new detection position
+        # frames_since_detect is how many playback frames elapsed since last detection
+        frames = max(1, self.frames_since_detect)
+        old = self.anchor_bbox
+        self.velocity = [
+            (bbox[0] - old[0]) / frames,
+            (bbox[1] - old[1]) / frames,
+            (bbox[2] - old[2]) / frames,
+            (bbox[3] - old[3]) / frames,
+        ]
+
+        # Update anchor and actual bbox to the real detection position
+        self.anchor_bbox = list(bbox)
+        self.bbox = list(bbox)
+        self.frames_since_detect = 0   # reset counter on real detection
+
         if frame_idx is not None:
             self.last_seen = frame_idx
         self.hits += 1
         self.time_since_update = 0
-        self.positions.append((bbox, frame_idx if frame_idx is not None else 0))
+        self.positions.append((list(bbox), frame_idx if frame_idx is not None else 0))
         
         # Dynamic majority voting for vehicle class
         if class_name:
@@ -59,10 +76,8 @@ class Track:
         # Update feature with exponential moving average
         if feature is not None and np.linalg.norm(feature) > 0:
             self.feature_history.append(feature)
-            # Keep last 10 features
             if len(self.feature_history) > 10:
                 self.feature_history = self.feature_history[-10:]
-            # Average features for more robust representation
             self.feature = np.mean(self.feature_history, axis=0)
             norm = np.linalg.norm(self.feature)
             if norm > 0:
@@ -76,27 +91,39 @@ class Track:
         x1, y1, x2, y2 = self.bbox
         return ((x1 + x2) / 2, (y1 + y2) / 2)
 
-    def predict_next_position(self):
-        """Simple linear prediction of next position."""
-        if len(self.positions) < 2:
-            return self.bbox
-        
-        prev_bbox, _ = self.positions[-2]
-        curr_bbox = self.bbox
-        
-        # Velocity
-        dx = curr_bbox[0] - prev_bbox[0]
-        dy = curr_bbox[1] - prev_bbox[1]
-        dw = (curr_bbox[2] - curr_bbox[0]) - (prev_bbox[2] - prev_bbox[0])
-        dh = (curr_bbox[3] - curr_bbox[1]) - (prev_bbox[3] - prev_bbox[1])
-        
-        predicted = [
-            curr_bbox[0] + dx,
-            curr_bbox[1] + dy,
-            curr_bbox[2] + dx + dw,
-            curr_bbox[3] + dy + dh
+    def get_display_bbox(self):
+        """
+        Linear extrapolation from anchor — does NOT mutate self.bbox.
+        Returns the display position for this track on the current frame.
+        Caps extrapolation at MAX_EXTRAPOLATE frames so boxes don't drift off screen.
+        """
+        MAX_EXTRAPOLATE = 8   # frames
+        n = min(self.frames_since_detect, MAX_EXTRAPOLATE)
+        if n == 0 or self.velocity == [0.0, 0.0, 0.0, 0.0]:
+            return list(self.anchor_bbox)
+        vx1, vy1, vx2, vy2 = self.velocity
+        a = self.anchor_bbox
+        return [
+            a[0] + vx1 * n,
+            a[1] + vy1 * n,
+            a[2] + vx2 * n,
+            a[3] + vy2 * n,
         ]
-        return predicted
+
+    def predict_next_position(self):
+        """
+        Predict bbox for matching purposes (one step ahead from anchor).
+        Does NOT mutate self.bbox — safe to call at any time.
+        """
+        vx1, vy1, vx2, vy2 = self.velocity
+        a = self.anchor_bbox
+        n = self.frames_since_detect + 1
+        return [
+            a[0] + vx1 * n,
+            a[1] + vy1 * n,
+            a[2] + vx2 * n,
+            a[3] + vy2 * n,
+        ]
 
 
 class SingleCameraTracker:
@@ -104,6 +131,10 @@ class SingleCameraTracker:
     Tracker for vehicles within a single camera view.
     Uses IoU + feature similarity for data association.
     """
+
+    # Maximum frames without a detection before we stop showing the bounding box.
+    # At 20 FPS with detection every ~8 frames, 12 gives ~0.6s grace.
+    MAX_DISPLAY_AGE = 12
 
     def __init__(self, camera_id, max_age=30, min_hits=3, 
                  iou_threshold=0.3, feature_threshold=0.6):
@@ -146,7 +177,8 @@ class SingleCameraTracker:
         self.frame_count = frame_idx
 
         if len(detections) == 0:
-            # Age all tracks
+            # Age all tracks — but do NOT reset frames_since_detect here
+            # (the playback loop increments that on every rendered frame)
             self._age_tracks()
             return self.get_active_tracks()
 
@@ -156,24 +188,30 @@ class SingleCameraTracker:
         if len(active_tracks) == 0:
             # All detections are new tracks
             for i in range(len(detections)):
-                self._create_track(detections[i], features[i], 
-                                   class_names[i], color_names[i], frame_idx)
+                feat_i = features[i] if (features and i < len(features)) else None
+                cls_i  = class_names[i] if (class_names and i < len(class_names)) else 'car'
+                col_i  = color_names[i] if (color_names and i < len(color_names)) else 'unknown'
+                self._create_track(detections[i], feat_i, cls_i, col_i, frame_idx)
         else:
             # Hungarian-like matching
             matched, unmatched_dets, unmatched_tracks = self._match(
                 active_tracks, detections, features
             )
 
-            # Update matched tracks
+            # Update matched tracks — resets anchor + velocity
             for track_idx, det_idx in matched:
                 track = active_tracks[track_idx]
-                track.update(detections[det_idx], features[det_idx],
-                             class_names[det_idx], color_names[det_idx], frame_idx)
+                feat_m = features[det_idx] if (features and det_idx < len(features)) else None
+                cls_m  = class_names[det_idx] if (class_names and det_idx < len(class_names)) else track.class_name
+                col_m  = color_names[det_idx] if (color_names and det_idx < len(color_names)) else track.color_name
+                track.update(detections[det_idx], feat_m, cls_m, col_m, frame_idx)
 
             # Create new tracks for unmatched detections
             for det_idx in unmatched_dets:
-                self._create_track(detections[det_idx], features[det_idx],
-                                   class_names[det_idx], color_names[det_idx], frame_idx)
+                feat_u = features[det_idx] if (features and det_idx < len(features)) else None
+                cls_u  = class_names[det_idx] if (class_names and det_idx < len(class_names)) else 'car'
+                col_u  = color_names[det_idx] if (color_names and det_idx < len(color_names)) else 'unknown'
+                self._create_track(detections[det_idx], feat_u, cls_u, col_u, frame_idx)
 
             # Age unmatched tracks
             for track_idx in unmatched_tracks:
@@ -196,19 +234,22 @@ class SingleCameraTracker:
             predicted_bbox = track.predict_next_position()
             for j in range(n_dets):
                 iou = self._compute_iou(predicted_bbox, detections[j])
-                feat_sim = self._compute_feature_similarity(track.feature, features[j])
+                f_j = features[j] if (features and j < len(features)) else None
+                feat_sim = self._compute_feature_similarity(track.feature, f_j) if f_j is not None else 0.0
                 
-                # Combined cost (lower is better)
-                # Weight: 40% IoU, 60% feature similarity
-                cost_matrix[i, j] = 1.0 - (0.4 * iou + 0.6 * feat_sim)
+                if feat_sim > 0.0:
+                    sim = 0.5 * iou + 0.5 * feat_sim
+                else:
+                    sim = iou
+                cost_matrix[i, j] = 1.0 - sim
         
         # Greedy matching (simpler than Hungarian, works well for small numbers)
         matched = []
         unmatched_dets = set(range(n_dets))
         unmatched_tracks = set(range(n_tracks))
         
-        # Sort by cost (best matches first)
-        indices = np.argwhere(cost_matrix < 0.7)  # Only consider reasonable matches
+        # Sort by cost (best matches first) - match when similarity >= 0.25
+        indices = np.argwhere(cost_matrix < 0.75)  # Only consider reasonable matches
         if len(indices) > 0:
             costs = cost_matrix[indices[:, 0], indices[:, 1]]
             sorted_idx = np.argsort(costs)
@@ -271,6 +312,28 @@ class SingleCameraTracker:
                 dead_ids.append(track_id)
         for tid in dead_ids:
             del self.tracks[tid]
+
+    def tick_display(self):
+        """
+        Called ONCE per rendered playback frame.
+        Increments frames_since_detect for every track so get_display_bbox()
+        extrapolates the correct number of steps from the last real detection.
+        Returns list of tracks that should be drawn on this frame.
+        """
+        drawable = []
+        for track in self.tracks.values():
+            track.frames_since_detect += 1
+            # Show track if it was detected recently OR still within display age
+            if track.time_since_update <= self.MAX_DISPLAY_AGE and track.hits >= 1:
+                drawable.append(track)
+        return drawable
+
+    def advance_motion(self):
+        """
+        Legacy compatibility shim — returns drawable tracks.
+        The playback loop should call tick_display() instead.
+        """
+        return self.tick_display()
 
     def get_active_tracks(self):
         """Get all currently active (visible) tracks."""

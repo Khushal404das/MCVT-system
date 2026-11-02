@@ -200,11 +200,11 @@ class CrossCameraReID:
     """
 
     # Cosine similarity is mapped to [0,1] via (sim+1)/2.
-    # A perfectly identical crop across cameras typically scores ~0.72–0.85
-    # after lighting/angle variation, so threshold is set at 0.60 combined.
-    FEATURE_THRESHOLD = 0.60     # minimum combined score to accept a match
-    FEATURE_ONLY_MIN  = 0.62     # if feature sim alone is this high, accept regardless of color
-    MERGE_THRESHOLD   = 0.72     # auto-merge two gallery entries if score >= this
+    # Same physical vehicle across cameras: score ~0.88-0.96 with MobileNetV2.
+    # Different vehicles of same type/color: score ~0.78-0.87.
+    # The merge pass is disabled — these thresholds gate initial cross-camera assignment only.
+    FEATURE_THRESHOLD = 0.88     # minimum combined score to accept a cross-camera match
+    FEATURE_ONLY_MIN  = 0.93     # feature-only acceptance: near-certain same vehicle
 
     def __init__(self, similarity_threshold=0.60, color_weight=0.15,
                  type_weight=0.10, feature_weight=0.75):
@@ -319,11 +319,13 @@ class CrossCameraReID:
             new_assignments.append((track, global_id))
             self._maybe_fire_switch(camera_id, global_id)
 
-        # ---- Merge pass: unify duplicate global IDs ----
-        # If two gallery entries score very highly against each other
-        # (e.g., same vehicle assigned different global IDs across cameras),
-        # merge the newer one into the older one and remap all keys.
-        self._run_merge_pass(camera_id)
+        # ---- Merge pass — DISABLED ----
+        # The merge pass caused all vehicles to collapse into G1 because
+        # G1's averaged feature history became a generic "vehicle" embedding
+        # that matched every new detection above the threshold.
+        # Single-camera tracking handles ID continuity; cross-camera matching
+        # handles the same vehicle appearing in a new camera.
+        # self._run_merge_pass(camera_id)  # disabled
 
         # After merges, fix any remapped IDs in results
         for local_id, gid in list(results.items()):
@@ -378,7 +380,7 @@ class CrossCameraReID:
                 query_feature, query_class, query_color, entry
             )
 
-            if (score >= self.similarity_threshold or feat_sim >= self.FEATURE_ONLY_MIN) \
+            if (score >= self.FEATURE_THRESHOLD or feat_sim >= self.FEATURE_ONLY_MIN) \
                     and score > best_score:
                 best_score = score
                 best_gid   = entry.global_id
@@ -428,7 +430,7 @@ class CrossCameraReID:
         the newer one (higher global_id) into the older one (lower global_id).
         Re-maps all id_mapping keys accordingly.
         """
-        entries = self.gallery.get_recent_entries(max_age_seconds=20)
+        entries = self.gallery.get_recent_entries(max_age_seconds=8)
         n = len(entries)
         if n < 2:
             return
@@ -454,9 +456,13 @@ class CrossCameraReID:
                 if a.class_name and b.class_name and a.class_name != b.class_name:
                     continue
 
-                # Feature score between their mean features
+                # Must be same color — prevents merging white + black cars etc.
+                if a.color_name and b.color_name and a.color_name.lower() != b.color_name.lower():
+                    continue
+
+                # Feature score between their mean features — require BOTH thresholds met
                 score, feat_sim = self._compute_score(b.feature, b.class_name, b.color_name, a)
-                if score >= self.MERGE_THRESHOLD or feat_sim >= 0.75:
+                if score >= self.MERGE_THRESHOLD and feat_sim >= 0.88:
                     keep_gid = min(a.global_id, b.global_id)
                     drop_gid = max(a.global_id, b.global_id)
                     to_merge.append((keep_gid, drop_gid))
@@ -547,7 +553,7 @@ class CrossCameraReID:
 
     def get_all_vehicles(self):
         """Return all recently-seen unique physical vehicles."""
-        return [e.to_dict() for e in self.gallery.get_recent_entries()]
+        return [e.to_dict() for e in self.gallery.get_recent_entries(max_age_seconds=60)]
 
     def get_vehicle_by_camera(self, camera_id):
         vehicles = []
