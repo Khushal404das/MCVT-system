@@ -1,0 +1,437 @@
+# ---------------------------------------------------------------------------
+# MCVT - Multi-Camera Vehicle Tracking System
+# Single external configuration file (SRS NFR-M-02).
+# Secrets (SMTP credentials, engine token) live in .env, never here (NFR-S-01).
+# Relative paths are resolved against the folder that contains this file.
+# ---------------------------------------------------------------------------
+
+paths:
+  database: storage/mcvt.sqlite
+  storage: storage
+  logs: storage/logs
+
+server:
+  web_host: 127.0.0.1
+  web_port: 8080
+  ws_host: 127.0.0.1
+  ws_port: 8090
+  # Browser-facing WebSocket URL. Empty = ws://<host of the web page>:<ws_port>
+  ws_public_url: ""
+
+cameras:
+  # Cameras are discovered automatically from video files / listed sources.
+  # Nothing about individual cameras is hard-coded in the source code.
+  discover:
+    directory: ../dataset
+    pattern: "*.mp4"
+    # Camera id is taken from the file name with this regex (first group),
+    # e.g. camera_c11.mp4 -> C11. Falls back to the file stem.
+    id_regex: "c(\\d+)"
+    id_prefix: "C"
+  # Explicit sources (RTSP or files) - added on top of discovered ones.
+  # Example:
+  #   - id: GATE
+  #     name: Main gate
+  #     source: rtsp://user:pass@192.168.1.20:554/Streaming/Channels/101
+  sources: []
+  # Per-camera overrides keyed by camera id: name, resolution_weight, enabled,
+  #   start_clock         - time on the video's clock at its first frame ("HH:MM:SS"). The
+  #                         earliest camera plays at once; later ones wait for the difference,
+  #                         so all cameras show the same real time (needs sync_playback)
+  #   start_seconds       - skip this much of the start of the video
+  #   clip_offset_seconds - where our frame 0 sits on FFmpeg's timeline of the same file
+  #                         (journey clips are cut with FFmpeg)
+  # C41 and C51 (as OpenCV/VLC open them) begin at 08:07:28; FFmpeg sees ~447 s more before that.
+  #   analysis_start_seconds - like start_seconds, but for the small analysis copy
+  # Cameras start as the original videos do (operator's choice): C11/C21/C31/C61 at 08:00:00,
+  # C41/C51 at 08:07:28, all at the same moment with no waiting. The 960p analysis copies of
+  # C41/C51 also contain 08:00:00-08:07:28, so they skip 447.5 / 446.3 s to start at 08:07:28.
+  # Note: C41/C51 then run 7.5 min ahead of the other cameras, so a car moving between them and
+  # another camera is not recognised as the same car. Remove analysis_start_seconds to put all
+  # six cameras on one clock (all start at 08:00:00).
+  #   clock_start         - shown clock at the camera's first played frame (default: clock_start below)
+  #   timestamp_mask      - [x1, y1, x2, y2] (0..1 of the frame) of the camera's own burned-in date/time:
+  #                         covered on the live view and replay clips; the shared clock is written there
+  # Shared clock (operator's table): every camera shows 08:00:00 at the moment playback starts, also
+  # C41/C51 whose own clocks read 08:07:28 there (they run 7 min 28 s fast; the same car is seen on
+  # C41 08:13:43 / C61 08:06:14). Vehicles are logged and listed with this time.
+  overrides:
+    C11: {timestamp_mask: [0.015, 0.045, 0.320, 0.103]}
+    C21: {timestamp_mask: [0.000, 0.045, 0.295, 0.103]}
+    C31: {timestamp_mask: [0.035, 0.045, 0.555, 0.120]}
+    C41: {clip_offset_seconds: 447.5, analysis_start_seconds: 447.5, timestamp_mask: [0.000, 0.045, 0.295, 0.103]}
+    C51: {clip_offset_seconds: 446.3, analysis_start_seconds: 446.3, timestamp_mask: [0.017, 0.045, 0.320, 0.103]}
+    C61: {timestamp_mask: [0.035, 0.045, 0.340, 0.103]}
+  clock_start: "08:00:00"
+  # How the per-camera resolution weight w_r (FR-CS-01) is derived when not
+  # overridden: sqrt_pixels | pixels | equal
+  resolution_weight_mode: sqrt_pixels
+  # Low-resolution "analysis stream" (like an IP camera's sub-stream) used for
+  # AI and the live view; journey videos are still cut from the originals.
+  # Create the copies once with:  python engine/prepare_streams.py
+  analysis:
+    enabled: true             # false = AI and live view read the full-size dataset videos (slow on CPU)
+    width: 960
+    fps: 30                   # maximum; cameras slower than this keep all their frames
+    directory: storage/streams
+  loop_files: true
+  # true = every video starts at its first frame at the same moment, and when the
+  # first one ends all of them restart from the beginning together (stay in step)
+  sync_playback: true
+  # true  = play files at their native FPS, like live RTSP cameras
+  # false = process files as fast as possible
+  realtime: true
+  reconnect_seconds: 5
+
+detection:
+  # yolov8n.pt / yolov8s.pt / yolov8m.pt are in engine/models. On the wide-angle
+  # campus cameras yolov8s finds ~2x more parked cars than yolov8n at 2x the CPU cost.
+  # yolov8n_mcvt.pt = YOLOv8n fine-tuned on these cameras (engine/training/). On held-out
+  # frames it finds 84% of vehicles vs 36% for the stock yolov8n.pt, at the same speed.
+  # yolov8n_mcvt_v2.pt = YOLOv8n trained on a Kaggle T4 GPU (engine/training/export_detector_frames.py
+  # + kaggle_finetune_detector.py): 1,635 frames of all six cameras, most taken when a vehicle
+  # arrived and 0.5-4 s before (in view but missed), labelled by YOLOv8x at 1280 px. On the last 15%
+  # of each video (not trained on), conf 0.50 / 640 px: recall 0.69 -> 0.87, small (<40 px) vehicles
+  # 0.60 -> 0.82, arriving vehicles 0.64 -> 0.81, precision 0.91 -> 0.94, mAP50 0.77 -> 0.96.
+  # Same speed. Previous: yolov8n_mcvt.pt.
+  model: engine/models/yolov8n_mcvt_v2.pt
+  # FR-VD-03 threshold (SRS default 0.60). 0.50 recovers distant/covered cars on
+  # these 1440p cameras; set back to 0.60 for strict SRS behaviour.
+  confidence: 0.50
+  classes: [car, motorcycle, bus, truck]   # FR-VD-02 (COCO 2, 3, 5, 7)
+  imgsz: 640
+  device: auto                # auto | cpu | cuda:0
+  # CPU threads for YOLOv8 (0 = PyTorch default). With reid.cpu_threads this splits the CPU so
+  # ReID cannot starve detection: measured here YOLOv8 133 ms/frame (was ~890 ms when they fought).
+  cpu_threads: 4
+  min_box_area_ratio: 0.0003  # ignore boxes smaller than this fraction of the frame
+  agnostic_nms: true          # one box per vehicle even if scored as two classes (e.g. car + truck)
+  # NMS IoU: of two boxes overlapping by IoU >= nms_iou only the more confident one is kept.
+  # Measured on 90 frames of our cameras (vs yolov8m @1280 reference, 402 vehicles):
+  # 0.70 (YOLO default) 17 double boxes, recall 0.965 | 0.50 15, 0.965 | 0.40 6, 0.963 | 0.30 5, 0.953
+  nms_iou: 0.40
+  # Only moving vehicles are shown, re-identified and listed. Parked cars are still
+  # tracked internally so they appear as soon as they start to drive.
+  moving_only: true
+  # A vehicle counts as moving when, from its first detection, at least motion_box_fraction
+  # of the pixels in its box are changing (background model run on every video frame), OR
+  # its box centre has travelled max(moving_min_shift, moving_box_fraction x box diagonal).
+  # Measured on these cameras: moving cars 0.11-0.16, parked cars 0.00.
+  motion_box_fraction: 0.05
+  motion_mask_width: 320
+  motion_mask_fps: 6           # background-model updates per camera per second (every frame cost 1.3 CPU cores)
+  motion_history_seconds: 20   # how fast stopped/parked cars fade into the background
+  stopped_after_seconds: 8     # a moving vehicle with no motion for this long is hidden again
+  moving_min_shift: 0.02
+  moving_box_fraction: 0.15
+
+tracking:                     # DeepSORT (FR-TR-01..04)
+  # Counted in ANALYSED frames. The SRS defaults (30 frames, confirm after 3) assume 15 AI
+  # frames/s; on this CPU each camera is analysed ~1-3 times/s, so a passing car would be
+  # gone before it is confirmed. 8 frames ~ 3-6 s of occlusion; confirm on the first hit.
+  max_age: 8
+  n_init: 1
+  max_iou_distance: 0.7
+  max_cosine_distance: 0.3
+  # Re-linking: at 1-2 AI checks/s a car approaching the camera moves/grows too much for the box
+  # overlap test and gets a new track. A new track where a moving vehicle's lost track should be
+  # (within link_seconds, at most link_max_speed frame-diagonals/s away, colour similarity >=
+  # link_min_similarity) continues that vehicle: same id, same box, its ReID samples kept.
+  link_seconds: 4.0
+  link_max_speed: 0.35
+  link_min_similarity: 0.5
+  # IoU matching at runtime: a new box that overlaps the lost vehicle's predicted box (last box moved
+  # along its velocity) by IoU >= link_iou is that vehicle even if it is outside the distance limit;
+  # its colour must then only be >= link_iou_min_similarity. 0 = off. (DeepSORT itself also matches
+  # by IoU: max_iou_distance 0.7 = a detection needs IoU >= 0.3 with a track's predicted box.)
+  link_iou: 0.3
+  link_iou_min_similarity: 0.3
+  # Duplicate tracks: the detector sometimes boxes one vehicle twice (e.g. "car" + "truck") and the
+  # tracker then follows it as two vehicles -> two ids on one car (seen: VH-14963/VH-14964 on C21).
+  # Two tracks of one camera whose boxes overlap (IoU >= duplicate_iou) on duplicate_checks AI
+  # checks in a row, the younger one at most duplicate_young_seconds old, are one vehicle: the
+  # younger track is removed and its new id merged into the older one's.
+  duplicate_iou: 0.6
+  duplicate_checks: 1         # the C21 case overlapped (IoU 0.67) on a single AI check only
+  duplicate_young_seconds: 6.0
+  # Appearance descriptor fed to DeepSORT: reid | histogram | auto
+  # auto = ResNet-IBN embeddings on GPU, colour histograms on CPU-only machines
+  appearance: auto
+
+reid:                         # ResNet-IBN cross-camera re-identification (FR-RI-*)
+  # mcvt_reid_finetuned.pth: the whole ResNet50-IBN fine-tuned on a Kaggle T4 GPU
+  # (engine/training/colab_finetune_reid.ipynb; this project's 1,189 crops of all six cameras with
+  # blurred far-away copies + VeRi-776, triplet + ID loss, 40 epochs). On footage it was not trained
+  # on: cross-camera rank-1 0.77 -> 0.91, far-away -> close-up 0.70 -> 1.00, same car median 0.59 ->
+  # 0.81, 99% of different cars below 0.56. ID rule at 0.55 = 25% right / 9% wrong / 14% duplicate
+  # (head 0.50 was 21 / 14 / 18). Previous: veri_sbs_R50-ibn.pth + adapter reid_head.npz
+  # (config backup: config.before_finetuned.yaml).
+  # mcvt_reid_e2e.pth: the ResNet50-IBN trained TOGETHER with a GRU (RNN) on image sequences of each
+  # track (engine/training/kaggle_train_gru_e2e.py, Kaggle T4, 4,000 steps, 755 vehicles incl. VeRi-776,
+  # every crop augmented: far-away blur, crop/flip, colour, erasing). Cross-camera rank-1 on our test
+  # tracks (44 queries), previous mcvt_reid_finetuned.pth -> this one, average of crops:
+  # 1 crop 0.64 -> 0.68, 1 far-away crop 0.43 -> 0.64, 2 crops 0.75 -> 0.77, 2 crops first far away
+  # 0.64 -> 0.75, 4 crops 0.86 -> 0.91. VeRi-776 test mAP 0.78 -> 0.79 (rank-1 0.97 -> 0.96).
+  # Its similarities run higher (same car median 0.52 -> 0.65), so the thresholds below were moved to
+  # let through the same share of different cars: 0.55 -> 0.64, 0.35 -> 0.48, 0.10 -> 0.21.
+  # Previous: engine/models/mcvt_reid_finetuned.pth (config backup: config.before_rnn.yaml).
+  weights: engine/models/mcvt_reid_e2e.pth
+  # Camera adapter learned on these cameras (engine/training/train_reid_adapter.py): removes each
+  # camera's feature bias and projects to a space where the same car matches across cameras.
+  # Thresholds below stay in plain ResNet-IBN units; they are converted automatically. "" = off.
+  # Trained adapter: engine/models/reid_adapter.npz (LDA256; the earlier LDA512 one is kept as
+  # reid_adapter_lda512_previous.npz). On footage it was not trained on (last 40% of the video,
+  # C21 cars looked up among C11 cars): right car ranked first 0.74 -> 0.89-0.90. With the ID rule
+  # (best >= threshold): plain 0.60 = 13% right id / 20% wrong / 22% duplicate;
+  # adapter 0.40 = 28% / 13% / 13%; adapter 0.38 = 35% / 15% / 7%. "" = off.
+  # The LDA adapter learned from C11/C21 pairs only and hurt the other cameras (one silver Prius
+  # on C41 / C61 / C51: plain 0.75 / 0.20, LDA adapter 0.51 / 0.03), so it is not used.
+  # reid_head.npz (engine/training/train_reid_head.py): a 256-d head trained with triplet + ID
+  # loss on crops of ALL six cameras plus blurred far-away copies of each crop. On footage it was
+  # not trained on: cross-camera rank-1 0.77 -> 0.86, far-away -> close-up rank-1 0.86 -> 0.95,
+  # AUC 0.932 -> 0.988 (99% of different-vehicle pairs below 0.54, was 0.72); ID rule plain 0.60
+  # = 14% right / 21% wrong / 21% duplicate, head 0.50 = 21% / 14% / 18%.
+  adapter: ""                 # the fine-tuned weights replace the head (was engine/models/reid_head.npz)
+  # Sequence ReID (RNN): engine/models/mcvt_reid_gru.pt = a bidirectional GRU + attention that turns a
+  # track's crop features (in time order) into one signature (engine/training/kaggle_train_gru.py,
+  # Kaggle T4, 755 vehicles / 5,383 tracks incl. VeRi-776). Cross-camera rank-1 on our test tracks
+  # (44 queries), average of crops -> GRU: 1 crop 0.64 -> 0.52, 2 crops 0.75 -> 0.64, 4 crops 0.86 -> 0.89
+  # (first crop far away: 0.86 -> 0.93); VeRi-776 test 0.97 -> 0.95. The engine gives an id after
+  # 1-2 crops, where the GRU is worse, so it is OFF. Set the path to switch it on (thresholds are
+  # converted automatically; reid.sequence_threshold sets the id threshold directly).
+  # End-to-end GRU (mcvt_reid_gru_e2e.pt, trained with mcvt_reid_e2e.pth): rank-1 with the GRU instead
+  # of the average, our test tracks: 1 crop 0.55 (avg 0.68), 2 crops 0.73 (avg 0.77), 4 crops 0.91
+  # (avg 0.91) - still not better than averaging the new ResNet's features, so it stays off; its
+  # training is what improved the ResNet above. To try it: engine/models/mcvt_reid_gru_e2e.pt.
+  sequence_model: ""
+  # ID threshold in the head's own similarity scale (used instead of converting the plain
+  # thresholds below). Lower = fewer duplicate ids, more wrong ids (0.55: 14% / 7% / 25%).
+  adapter_threshold: 0.50
+  input_size: [256, 256]
+  # FR-RI-03. ID rule: a new track's embedding is compared with every stored vehicle; among the
+  # vehicles at or above this similarity (and passing the colour/type check) the HIGHEST one gives
+  # its id, otherwise a new id is created. Measured on these cameras (same car seen by C11 and
+  # C21, 3 crops): 0.60 -> 19% right id, 9% wrong id, 29% duplicate; 0.75 -> almost always a new id.
+  similarity_threshold: 0.64  # RNN-trained ResNet (same share of different cars as 0.55 with mcvt_reid_finetuned.pth)
+  min_samples: 2              # crops averaged (temporal pooling) before assigning a global id
+  # Longest a shown (moving) vehicle waits for its id. A far/small car whose crop is too small for
+  # ReID (min_crop_size), or whose sample is still queued, then gets a new id at once; its first
+  # usable crop is compared with the database and merges it into a known vehicle if it matches.
+  # 3.0 (was 1.5): ReID takes ~1.2-1.6 s per crop on this CPU, so at 1.5 s most cars got their id from
+  # timing before any feature existed (log: 7 of ~380 ids decided by features). The box is shown at
+  # once either way; only its id label waits.
+  id_wait_seconds: 3.0
+  sample_interval: 4          # processed frames between ReID samples of the same track
+  max_crops_per_cycle: 8
+  cpu_threads: 1              # CPU threads for ResNet-IBN (~1 s/crop on this CPU; more threads starve YOLOv8)
+  # Crops embedded per ReID call. 1 = a moving car without an id is always next (a batch of 8
+  # parked-car samples made it wait 8-10 s); batching gives no speed-up on CPU.
+  worker_batch: 1
+  # ReID is the most expensive model here, so samples go where they matter:
+  parked_samples: 1           # samples stored of a parked car (used when it starts to move)
+  verify_samples: 3           # samples used to check a new id against vehicles from other cameras
+  samples_per_visit: 4        # max samples per vehicle per camera visit
+  # The vehicle an operator follows is sampled on every AI check (whole vehicle only, top
+  # priority) up to this many per camera: the next camera is matched against these samples.
+  follow_samples: 10
+  gallery_size: 30            # embeddings kept per global id
+  min_crop_size: 28           # pixels, smaller crops are not embedded
+  merge_margin: 0.05          # extra similarity needed to merge two global ids later
+  # Camera hand-off (spatio-temporal prior): the same car seen from another camera looks
+  # different, so a vehicle that LEFT a camera less than handoff_window_seconds ago may be
+  # matched in another camera at a lower similarity. Followed vehicles use follow_threshold.
+  # One rule for every vehicle: these are equal to similarity_threshold (no lower bar for hand-offs
+  # or the followed vehicle, which caused wrong matches).
+  handoff_threshold: 0.64
+  follow_threshold: 0.64
+  handoff_window_seconds: 90
+  # A followed vehicle that just left a camera may also match down to follow_min_similarity when
+  # the candidate is closer to it than to any other known vehicle by follow_margin (the same car
+  # seen from another camera scored 0.51-0.68 here because of the viewpoint change).
+  follow_min_similarity: 1.0   # 1.0 = off
+  follow_margin: 0.06
+  # Camera pairs that watch the same place: a vehicle can be live in both at once, so it may be
+  # matched across them at the hand-off threshold (otherwise a visible vehicle needs the strict
+  # similarity_threshold in another camera). C11 and C21 both look at the main gate.
+  # C41 and C51 watch the same courtyard (one silver Prius seen on both at 08:11:4x, ~20 px far
+  # away on C41 and ~250 px close up on C51: appearance similarity only 0.20 there).
+  # C61 sees the same far end of the yard as C41 and C51: one dark car was boxed on all three at the
+  # same moment (C41 08:13:43 / C51 08:13:3x / C61 08:06:14 = the same time with C61's 7.5 min clock
+  # offset) and got three ids (VH-22691 / VH-22685 / VH-22678) while C61 was not listed here.
+  overlapping_cameras:
+    - [C11, C21]
+    - [C41, C51]
+    - [C51, C61]
+    - [C41, C61]
+  # Overlapping cameras: a new track gets the id of the ONE vehicle being seen on the other camera
+  # within this many seconds when appearance cannot decide (no stored vehicle passes the
+  # threshold) and colour/type do not conflict. Two or more such vehicles -> no link. 0 = off.
+  overlap_link_seconds: 3.0
+  # ... and not if their features are below this (nothing alike), or the type differs (car vs
+  # motorbike) / colour clearly differs already on the first readings.
+  overlap_min_similarity: 0.21
+  # Several vehicles live on the overlapping camera: the one whose features are clearly closest
+  # (route_margin) is it; else the one whose track there started within overlap_arrival_seconds of
+  # this track (the same car enters both views at about the same time), if no other is that close.
+  overlap_arrival_seconds: 6.0
+  # Overlapping cameras by timestamp, also AFTER ids were given: two different ids in view on two
+  # overlapping cameras that came into view within overlap_merge_arrival_seconds of each other and
+  # stayed in view together for overlap_merge_min_seconds are one vehicle (only when each is the
+  # other's only such partner and colour/type do not conflict) -> the younger id is merged.
+  overlap_merge: true
+  overlap_merge_arrival_seconds: 6.0
+  overlap_merge_min_seconds: 4.0
+  # Driving route: vehicles enter at the gate and pass the cameras in this order. The front of a car
+  # on one camera and its rear on the next can score only ~0.2 on appearance, so the route decides
+  # when the features cannot: a new track gets the id of the vehicle that just left the PREVIOUS
+  # route camera (within route_max_seconds per camera; route_skip = cameras that may miss it in
+  # between), or that the NEXT route camera saw just before (within route_back_seconds: neighbouring
+  # views meet at the edges). Several candidates -> the one with clearly the closest features
+  # (route_margin), else the one that left first (route_fifo: one road, first in = first out).
+  # A feature match of a vehicle that is not on the route wins only if it is route_override higher.
+  # Colour/type must not conflict, and features below route_min_similarity rule a vehicle out.
+  # Measured from the sightings table (start to start, same vehicle): the next camera sees it 0-20 s
+  # later; for C51 -> C61 about half of the cars appear on C61 first (-20 s .. +10 s).
+  route: [C11, C21, C31, C41, C51, C61]
+  # Cars drive the route both ways (in through the gate and back out): a car that left C21 is
+  # expected on C31 AND on C11, with the same wait (route_max_seconds).
+  route_bidirectional: true
+  # Feature check of ids given by timing: a track linked by overlap / route before it had features
+  # is compared, on its next link_check_samples samples, with every vehicle timing allows; if another
+  # one matches clearly better (by route_margin, at least route_feature_min) the id is corrected.
+  link_check_samples: 2
+  # A vehicle that leaves a camera waits up to route_max_seconds (per route camera) for the next
+  # camera before it stops being expected there (a slow car, a stop on the way).
+  # search_seconds: a vehicle that left every camera stays on the dashboard's live list as
+  # "Searching" (with the cameras it is expected on) and in the log for this long; appearance
+  # matching against it never expires (its features stay stored).
+  search_seconds: 300
+  route_max_seconds: 300
+  route_back_seconds: 20
+  route_skip: 1
+  route_min_similarity: 0.21
+  route_margin: 0.08
+  route_feature_min: 0.40     # features pick among waiting vehicles from here (same car across cameras ~0.65 median)
+  route_override: 0.15
+  # Several vehicles waiting for this camera and features undecided: the one whose time since it
+  # left fits the usual drive time best. Usual drive time = median of the last 50 matched vehicles
+  # for that camera pair once route_learn_min were seen, else route_typical_seconds per camera
+  # (sightings: the next camera sees a car ~0-20 s later).
+  route_fifo: true
+  route_typical_seconds: 15
+  route_learn_min: 5
+  # One vehicle cannot be in two places: an id that was seen on another (non-overlapping) camera
+  # less than live_gap_seconds ago is in use. A new track may take it only when its similarity is
+  # higher than the similarity the current holder got it with by at least steal_margin; the
+  # holder then gets the next best id (or a new one). Several tracks wanting one id -> the
+  # highest similarity keeps it.
+  live_gap_seconds: 2.0
+  steal_margin: 0.05
+  gallery_max_age_hours: 72   # older vehicles are not reloaded into the live gallery
+  # false = every engine start begins with an empty gallery. Right for replayed recordings: each run
+  # replays the same cars, and reloading earlier runs (2,541 entries, mostly the same cars under
+  # several ids) caused false matches. Set true for real cameras so vehicles are remembered.
+  load_gallery_on_start: false
+  # Colour + type of each vehicle, stored with its id (vehicles.color / vehicles.vclass). A stored
+  # vehicle whose colour or type clearly differs from a new track's can't give it its id, even
+  # when the appearance features are close. Measured on 341 tracklets of these cameras (a track
+  # with 2-4 crops vs a stored vehicle): colour blocks 0-1% of same-car camera pairs and 13-18%
+  # of look-alike different cars that pass the 0.60 hand-off threshold.
+  # enabled: false = IDs come from the ResNet-IBN embedding + cosine similarity alone (colour and
+  # type are then only a description). On: a stored vehicle of a clearly different colour/type is
+  # skipped, so the highest-similarity rule picks among plausible vehicles only.
+  attributes:
+    enabled: true
+    color: true
+    type: true
+    min_votes: 2          # colour readings a stored vehicle needs before its colour counts
+    track_min_votes: 1    # ... and a new track (moving cars are matched on their first crop)
+    min_share: 0.6        # ... and the share of them that must agree
+    # Neutral shades (white-silver-grey-black) this many steps apart still count as one car.
+    # 2: C21's darker exposure turns C11's white cars grey (seen live: white on C11, grey on C21
+    # 3-5 s later, similarity 0.40-0.49, blocked at 1). White vs black and neutral vs a real
+    # colour (red, blue, ...) still rule a match out.
+    neutral_max_steps: 2
+    type_min_votes: 3.0   # summed detector confidence before a side's type counts
+    # classes that may be one vehicle (the detector calls some SUVs/pickups "truck")
+    type_groups:
+      - [car, truck, bus]
+      - [motorcycle, bicycle]
+    color_naming:
+      chroma_min: 14          # LAB chroma (after removing the camera's tint) that counts as coloured
+      colored_fraction: 0.4   # share of the body that must be coloured for a hue name
+      lightness_levels: [58, 42, 25]   # body lightness (0-100) lower bounds: white, silver, grey
+      cast_neutral_chroma: 25 # pixels this close to neutral estimate the camera's tint
+      cast_min_samples: 8     # vehicles seen on a camera before its colours are named
+      cast_samples: 200       # tint estimate = median of this many recent vehicles
+
+switching:                    # Camera scoring and switching (FR-CS-*)
+  hysteresis: 0.15
+  buffer_frames: 5
+  fallback_frames: 3
+  dbn_stay_probability: 0.85
+  dbn_evidence_gain: 8.0
+
+pipeline:
+  max_process_fps: 10
+  # Motion-gated scheduling (helps CPU-only machines): a camera whose picture
+  # did not change is only re-detected every idle_camera_interval seconds.
+  motion_gating: true
+  motion_threshold: 0.006     # fraction of (downscaled) pixels that must change (no motion mask)
+  motion_blob_fraction: 0.002 # with the motion mask: largest moving blob (share of the frame) to count as traffic
+  idle_camera_interval: 3.0
+  # Cameras analysed per cycle. The camera on screen (and any camera that sees the tracked
+  # vehicle) is analysed every cycle; the others take turns. 0 = all cameras every cycle.
+  max_cameras_per_cycle: 3
+  # Live video is streamed independently of the AI: the camera in an operator's
+  # main view at its own frame rate (up to stream_fps_main), others as small tiles.
+  stream_width: 960
+  stream_fps_main: 30
+  tile_width: 480
+  stream_fps_tile: 4
+  stream_fps_grid: 12          # per camera while an operator is on the 6-camera grid view
+  # Live view is shown display_delay_seconds behind real time, so every frame lies between two
+  # AI results and its boxes are interpolated between them (boxes stay on the cars even at
+  # 1-2 AI updates per second). Set 0 for no delay (boxes then follow by optical flow).
+  display_delay_seconds: 2.5
+  overlay_hold_seconds: 0.4
+  # Box continuity: a moving vehicle keeps its box across missed detections up to this gap,
+  # and the box follows its motion this long before its first / after its last detection.
+  overlay_max_gap_seconds: 4.0
+  overlay_edge_seconds: 0.8
+  # Only used when display_delay_seconds is 0:
+  overlay_optical_flow: true
+  overlay_flow_width: 480
+  # Fallback when optical flow is off: move boxes a little along their motion (damped, capped).
+  overlay_extrapolate_seconds: 0.6
+  overlay_extrapolate_damping: 0.6
+  overlay_stale_seconds: 2.5
+  jpeg_quality: 70
+  vehicle_broadcast_interval: 1.0
+  vehicle_live_timeout: 15.0  # drop a camera from a vehicle's "in view" list if that camera stalls this long
+  parked_motion_ratio: 0.03   # bbox centre movement (fraction of frame) under which a vehicle is "parked"
+  db_flush_interval: 1.0
+
+stitching:                    # FR-VS-*
+  ffmpeg: auto                # auto = bundled imageio-ffmpeg binary, or a path
+  output_width: 1280
+  output_height: 720
+  fps: 15
+  crf: 27
+  preset: veryfast
+  clip_padding: 1.0
+  max_clip_seconds: 90
+  min_segment_seconds: 0.5
+  label_clips: true
+
+email:                        # FR-ED-*  (credentials come from SMTP_USER / SMTP_PASSWORD)
+  host: smtp.gmail.com
+  port: 587
+  security: starttls          # starttls | ssl | none
+  sender: ""                  # empty = SMTP_USER
+  subject: "MCVT journey video for vehicle {gid}"
+  max_attachment_mb: 25
+  timeout: 60
+
+auth:
+  ws_token_ttl: 43200

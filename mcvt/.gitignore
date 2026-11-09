@@ -1,0 +1,13 @@
+.env
+storage/
+__pycache__/
+*.pyc
+.pytest_cache/
+engine/models/*.pt
+engine/models/*.pth
+engine/models/*.npz
+# the fine-tuned detector is small (6 MB): kept so detection works after cloning
+!engine/models/yolov8n_mcvt_v2.pt
+# config backups and local tool folders
+config.before_*.yaml
+.claude/
