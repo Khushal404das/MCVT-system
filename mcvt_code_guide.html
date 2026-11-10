@@ -1,0 +1,401 @@
+<title>MCVT Code Guide</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: reference manual - sticky folder index on the left, file entries on the right; one column on phones. */
+:root {
+  --bg: #f6f8fb; --panel: #ffffff; --fg: #18212d; --muted: #5a6778; --line: #dbe2ea;
+  --accent: #0066cc; --accent-soft: #e3effb; --orange: #e85d04; --orange-soft: #fdebdc;
+  --green: #1d7a46; --green-soft: #e1f3e8; --violet: #6b46c1; --violet-soft: #ece6fa;
+  --code-bg: #eef2f7;
+  --sans: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #0f141b; --panel: #161d27; --fg: #e4e9f0; --muted: #98a5b6; --line: #2a3442;
+  --accent: #5aa7f2; --accent-soft: #15283d; --orange: #ff8a3d; --orange-soft: #33220f;
+  --green: #5cc98a; --green-soft: #132a1d; --violet: #a98af0; --violet-soft: #241b38;
+  --code-bg: #1e2733; color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --bg: #0f141b; --panel: #161d27; --fg: #e4e9f0; --muted: #98a5b6; --line: #2a3442;
+  --accent: #5aa7f2; --accent-soft: #15283d; --orange: #ff8a3d; --orange-soft: #33220f;
+  --green: #5cc98a; --green-soft: #132a1d; --violet: #a98af0; --violet-soft: #241b38;
+  --code-bg: #1e2733; color-scheme: dark; }
+
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); font: 15px/1.6 var(--sans); }
+.wrap { max-width: 1180px; margin: 0 auto; padding-block: 28px 64px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+h1 { font-size: 30px; line-height: 1.2; margin: 0 0 6px; text-wrap: balance; letter-spacing: -0.01em; }
+h2 { font-size: 21px; margin: 0 0 4px; text-wrap: balance; }
+h3 { font-size: 16px; margin: 0; }
+p { margin: 0; }
+code, .mono { font-family: var(--mono); font-size: 0.88em; }
+code { background: var(--code-bg); padding: 1px 5px; border-radius: 4px; overflow-wrap: anywhere; }
+.lede { color: var(--muted); max-width: 70ch; }
+.eyebrow { font-size: 12px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--accent); font-weight: 600; }
+
+.layout { display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 32px; margin-top: 28px; }
+nav.index { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 16px); align-self: start; display: flex; flex-direction: column; gap: 2px; font-size: 14px; }
+nav.index a { color: var(--muted); text-decoration: none; padding: 5px 10px; border-radius: 6px; display: flex; justify-content: space-between; gap: 8px; }
+nav.index a:hover, nav.index a:focus-visible { background: var(--accent-soft); color: var(--fg); outline: none; }
+nav.index .n { font-family: var(--mono); font-size: 12px; }
+main { display: flex; flex-direction: column; gap: 40px; min-width: 0; }
+
+.search { display: flex; gap: 10px; align-items: center; margin-top: 18px; flex-wrap: wrap; }
+.search input { flex: 1 1 260px; min-width: 0; font: inherit; padding: 9px 12px; border: 1px solid var(--line); border-radius: 8px; background: var(--panel); color: var(--fg); }
+.search input:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.search .count { color: var(--muted); font-size: 13px; }
+
+/* flow diagram */
+.flow { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 18px; overflow-x: auto; }
+.flow ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; min-width: 0; }
+.flow li { display: grid; grid-template-columns: 34px minmax(0, 1fr); gap: 12px; align-items: start; }
+.flow .step { font-family: var(--mono); font-size: 13px; width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; background: var(--accent-soft); color: var(--accent); font-weight: 500; }
+.flow b { font-weight: 600; }
+.flow .files { color: var(--muted); font-size: 13px; }
+
+.section-head { display: flex; flex-direction: column; gap: 4px; padding-bottom: 10px; border-bottom: 1px solid var(--line); margin-bottom: 14px; scroll-margin-top: 16px; }
+.files-list { display: grid; gap: 10px; }
+.file { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; display: grid; gap: 6px; min-width: 0; }
+.file header { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 12px; }
+.file .path { font-family: var(--mono); font-size: 14px; font-weight: 500; overflow-wrap: anywhere; }
+.file .lines { font-family: var(--mono); font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.tag { font-size: 11px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; padding: 2px 7px; border-radius: 999px; }
+.t-core { background: var(--accent-soft); color: var(--accent); }
+.t-web { background: var(--orange-soft); color: var(--orange); }
+.t-test { background: var(--green-soft); color: var(--green); }
+.t-train { background: var(--violet-soft); color: var(--violet); }
+.t-cfg { background: var(--code-bg); color: var(--muted); }
+.file p { color: var(--fg); }
+.file ul { margin: 2px 0 0; padding-left: 18px; color: var(--muted); font-size: 14px; display: grid; gap: 2px; }
+.file ul b { color: var(--fg); font-weight: 500; }
+.note { border-left: 3px solid var(--orange); padding: 8px 12px; background: var(--orange-soft); border-radius: 0 8px 8px 0; font-size: 14px; }
+.empty { color: var(--muted); font-style: italic; }
+
+@media (max-width: 820px) {
+  .layout { grid-template-columns: minmax(0, 1fr); }
+  nav.index { position: static; flex-direction: row; flex-wrap: wrap; gap: 4px; }
+  nav.index a { background: var(--panel); border: 1px solid var(--line); }
+  nav.index .n { display: none; }
+  h1 { font-size: 25px; }
+}
+@media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
+</style>
+
+<div class="wrap">
+  <div class="eyebrow">MCVT · Agent-based Vision Mixer for Video Broadcasts</div>
+  <h1>MCVT Code Guide</h1>
+  <p class="lede">What every file in <code>D:\MCVT-system\mcvt</code> does and how the files work together. The system has three running parts: a <b>Python AI engine</b>, a <b>PHP WebSocket hub</b> and a <b>PHP web dashboard</b>. All three share one SQLite database and one <code>config.yaml</code>.</p>
+  <div class="search">
+    <input id="q" type="search" placeholder="Filter files, e.g. matcher, hysteresis, email, VH-" aria-label="Filter files">
+    <span class="count" id="count"></span>
+  </div>
+
+  <div class="layout">
+    <nav class="index" aria-label="Folders">
+      <a href="#flow">How it fits together</a>
+      <a href="#root">Project root <span class="n" data-sec="root"></span></a>
+      <a href="#engine">Engine core <span class="n" data-sec="engine"></span></a>
+      <a href="#reid">ReID model <span class="n" data-sec="reid"></span></a>
+      <a href="#web">Web server &amp; hub <span class="n" data-sec="web"></span></a>
+      <a href="#api">REST API <span class="n" data-sec="api"></span></a>
+      <a href="#tests">Tests <span class="n" data-sec="tests"></span></a>
+      <a href="#training">Training <span class="n" data-sec="training"></span></a>
+      <a href="#pres">Presentation &amp; diagrams <span class="n" data-sec="pres"></span></a>
+    </nav>
+
+    <main>
+      <!-- ========================================================= FLOW -->
+      <section id="flow">
+        <div class="section-head"><h2>How it fits together</h2>
+          <p class="lede">The path of one car, from camera to emailed video. Each step lists the files that do the work.</p></div>
+        <div class="flow"><ol>
+          <li><span class="step">1</span><div><b>Read cameras.</b> One background thread per camera (C11 … C61) reads the video and keeps only the newest frame. All recordings share one clock that starts at 08:00:00.<div class="files">camera.py · config.py · prepare_streams.py</div></div></li>
+          <li><span class="step">2</span><div><b>Detect.</b> YOLOv8n, fine-tuned on these cameras, finds cars, buses, trucks and motorcycles. A background model keeps only the moving ones.<div class="files">detector.py · camera.py (MotionMask)</div></div></li>
+          <li><span class="step">3</span><div><b>Track inside one camera.</b> DeepSORT gives each car a local track id and a Kalman filter predicts it through short occlusions.<div class="files">tracker.py · flow.py</div></div></li>
+          <li><span class="step">4</span><div><b>Re-identify across cameras.</b> ResNet50-IBN turns crops into 2048-number feature vectors. Cosine similarity ≥ 0.64, plus the camera route, travel time, colour and type, decide the global id (VH-…).<div class="files">reid/resnet_ibn.py · reid/extractor.py · matcher.py · attributes.py</div></div></li>
+          <li><span class="step">5</span><div><b>Switch cameras.</b> For a followed car every camera gets a score (box size × resolution weight). A Bayesian belief, a 0.15 hysteresis margin, a 5-frame buffer and a 3-frame fallback choose the camera shown.<div class="files">switching.py · pipeline.py</div></div></li>
+          <li><span class="step">6</span><div><b>Save and stream.</b> Vehicles, features, sightings and logs go to SQLite. Frames and events go over a WebSocket to the PHP hub, which forwards them to every signed-in browser.<div class="files">db.py · bridge.py · logbus.py · WsServer.php</div></div></li>
+          <li><span class="step">7</span><div><b>Dashboard.</b> The operator watches the grid, clicks a car to follow it, replays its journey and asks for the full video.<div class="files">index.php · app.js · api/*.php · media.php</div></div></li>
+          <li><span class="step">8</span><div><b>Journey video and email.</b> The request is queued in the database. A worker thread collects the clips, FFmpeg stitches them in time order, and the video is emailed over SMTP if an address was given.<div class="files">jobs.py · stitcher.py · emailer.py · api/journey.php</div></div></li>
+        </ol></div>
+      </section>
+
+      <!-- ========================================================= ROOT -->
+      <section id="root">
+        <div class="section-head"><h2>Project root</h2><p class="lede">Settings, database layout, start-up script.</p></div>
+        <div class="files-list">
+          <article class="file"><header><span class="path">config.yaml</span><span class="tag t-cfg">Config</span><span class="lines">426 lines</span></header>
+            <p>The one settings file read by both Python and PHP, so no threshold is hard-coded (NFR-M-02).</p>
+            <ul><li><b>paths / server:</b> database file, web port 8080, WebSocket port 8090.</li>
+              <li><b>cameras:</b> find videos in <code>../dataset</code>, ids from file names (<code>camera_c21.mp4 → C21</code>), shared clock <code>08:00:00</code>, per-camera overrides.</li>
+              <li><b>detection:</b> model <code>yolov8n_mcvt_v2.pt</code>, confidence 0.50. <b>tracking:</b> DeepSORT <code>max_age 8</code>, <code>n_init 1</code>.</li>
+              <li><b>reid:</b> weights <code>mcvt_reid_e2e.pth</code>, similarity threshold 0.64, hand-off/follow thresholds, route between cameras, colour/type rules.</li>
+              <li><b>switching:</b> hysteresis 0.15, buffer 5 frames, fallback 3 frames. <b>stitching / email:</b> FFmpeg and SMTP (port 587).</li></ul></article>
+          <article class="file"><header><span class="path">schema.sql</span><span class="tag t-cfg">Database</span><span class="lines">99 lines</span></header>
+            <p>Creates the SQLite tables shared by the engine and the website:</p>
+            <ul><li><b>users, ws_tokens:</b> operator logins and short-lived WebSocket tokens.</li>
+              <li><b>cameras:</b> id, name, resolution, FPS, resolution weight, status.</li>
+              <li><b>vehicles:</b> global id (VH-…), type, colour, first/last seen, thumbnail, <code>merged_into</code>.</li>
+              <li><b>embeddings:</b> the feature vectors (the ReID "gallery").</li>
+              <li><b>sightings:</b> one visit of a car to one camera (start/end time, video offsets, boxes). These are the clips for the journey video.</li>
+              <li><b>switch_events, jobs, logs:</b> camera switches, journey-video requests, system log.</li></ul></article>
+          <article class="file"><header><span class="path">start.bat</span><span class="tag t-cfg">Start-up</span><span class="lines">10 lines</span></header>
+            <p>Opens three windows: the WebSocket hub (<code>ws-server.php</code>), the web server (<code>serve.php</code>), and the AI engine (<code>prepare_streams.py</code> then <code>run_engine.py</code>).</p></article>
+          <article class="file"><header><span class="path">requirements.txt</span><span class="tag t-cfg">Config</span><span class="lines">14 lines</span></header>
+            <p>Python packages: ultralytics (YOLOv8), deep-sort-realtime, torch/torchvision, opencv-python, ffmpeg-python, imageio-ffmpeg, PyYAML, numpy, websocket-client, pytest.</p></article>
+          <article class="file"><header><span class="path">README.md</span><span class="tag t-cfg">Docs</span><span class="lines">256 lines</span></header>
+            <p>Project manual: architecture, first run, how hand-off works, training steps, CPU settings, known limits, and a map from SRS requirements to files.</p></article>
+          <article class="file"><header><span class="path">engine/run_engine.py</span><span class="tag t-core">Engine</span><span class="lines">18 lines</span></header>
+            <p>Entry point of the AI engine. Loads <code>config.yaml</code> and starts <code>Pipeline(cfg).run()</code>.</p></article>
+          <article class="file"><header><span class="path">engine/prepare_streams.py</span><span class="tag t-core">Engine</span><span class="lines">61 lines</span></header>
+            <p>One-time step that writes a small 960 px / 10 FPS copy of each camera video to <code>storage/streams/</code>, like an IP camera's sub-stream. The AI and live view use the small copy so a CPU-only laptop keeps up. Journey videos are still cut from the full-quality originals. Videos already converted are skipped.</p></article>
+          <article class="file"><header><span class="path">engine/models/e2e_metrics.json</span><span class="tag t-cfg">Results</span><span class="lines">209 lines</span></header>
+            <p>Numbers saved by the end-to-end ResNet + GRU training run (retrieval accuracy, thresholds). The model weights in the same folder (<code>yolov8n_mcvt_v2.pt</code>, <code>mcvt_reid_e2e.pth</code> …) are binary files, not code.</p></article>
+        </div>
+      </section>
+
+      <!-- ========================================================= ENGINE -->
+      <section id="engine">
+        <div class="section-head"><h2>Engine core <code>engine/mcvt/</code></h2><p class="lede">The Python AI engine. Each module is one component, so it can be replaced on its own (NFR-M-01).</p></div>
+        <div class="files-list">
+          <article class="file"><header><span class="path">pipeline.py</span><span class="tag t-core">Engine</span><span class="lines">1707 lines</span></header>
+            <p>The heart of the engine. One loop takes the newest frame of every camera and runs detection → tracking → ReID → switching, then updates the database and streams results to the hub.</p>
+            <ul><li><b>Pipeline:</b> the main loop. Picks which cameras to analyse this cycle (busy and followed cameras first), joins broken tracks of one car, removes duplicate boxes, gives ids, ends tracks, writes sightings, sends vehicle lists and stats.</li>
+              <li><b>Operator commands:</b> <code>_on_command</code> receives "follow VH-…" from the dashboard. <code>_update_switching</code> and <code>_update_handoff</code> keep the best camera on screen and search the next cameras when the car leaves.</li>
+              <li><b>ReIDWorker:</b> a thread that runs the slow ResNet on crops so the main loop never waits.</li>
+              <li><b>FrameStreamer:</b> sends video at the camera's own frame rate with boxes interpolated between AI results (live view is 2.5 s behind real time so boxes sit exactly on cars).</li>
+              <li><b>TrackRecord / VehicleLive:</b> what is known about one local track and one global vehicle. <b>stamp_clock:</b> covers the camera's own timestamp and writes the shared clock.</li></ul></article>
+          <article class="file"><header><span class="path">camera.py</span><span class="tag t-core">Engine</span><span class="lines">302 lines</span></header>
+            <p>Reads cameras (video file or RTSP), one thread each, keeping only the latest frame. A failed camera is retried without stopping the others (NFR-R-02).</p>
+            <ul><li><b>CameraStream:</b> reader thread, resolution/FPS probing, status. <b>FramePacket:</b> one frame plus its camera, time and offset.</li>
+              <li><b>MotionMask:</b> background model per camera. Parked cars fade into the background, moving cars show up.</li>
+              <li><b>PlaybackClock:</b> starts all recordings together and restarts them together. <b>assign_resolution_weights:</b> works out <code>w_r</code> from each camera's resolution.</li></ul></article>
+          <article class="file"><header><span class="path">detector.py</span><span class="tag t-core">Engine</span><span class="lines">85 lines</span></header>
+            <p>Vehicle detection with YOLOv8 (FR-VD-01..05). <b>VehicleDetector</b> keeps only vehicle classes above the confidence threshold. <code>detect_batch</code> runs all cameras in one pass. <b>Detection</b> holds the box, class and confidence.</p></article>
+          <article class="file"><header><span class="path">tracker.py</span><span class="tag t-core">Engine</span><span class="lines">85 lines</span></header>
+            <p>Tracking inside one camera with DeepSORT (FR-TR-01..04). <b>CameraTracker</b> is one DeepSORT per camera: local ids, Kalman prediction while a car is hidden, removal after <code>max_age</code> missed frames.</p></article>
+          <article class="file"><header><span class="path">flow.py</span><span class="tag t-core">Engine</span><span class="lines">60 lines</span></header>
+            <p>Keeps boxes on moving cars between AI updates. <b>FlowBoxes</b> follows points inside each box with Lucas-Kanade optical flow and moves the box with them.</p></article>
+          <article class="file"><header><span class="path">matcher.py</span><span class="tag t-core">Engine</span><span class="lines">697 lines</span></header>
+            <p>Cross-camera re-identification and global ids (FR-RI-02..04). This decides whether a car is new (<code>VH-…</code>) or one seen before.</p>
+            <ul><li><b>CrossCameraMatcher:</b> keeps the feature gallery. <code>matchAcrossCameras</code> compares a track with every stored vehicle by cosine similarity, and the highest score above the threshold gives the id.</li>
+              <li><b>Rules:</b> one id can't be live on two cameras that don't overlap; two tracks in one camera never share an id; colour/type must agree.</li>
+              <li><b>Route and timing:</b> <code>route_candidates</code>, <code>typical_travel</code> and <code>expected_next</code> learn which camera comes next and how long the drive takes. <code>link_overlap</code> joins the two gate cameras C11 + C21 that see one car at the same moment.</li>
+              <li><b>Fixing mistakes:</b> <code>find_merge</code> / <code>merge</code> fold a duplicate id into the real one; <code>displace</code> takes an id from a weaker match.</li>
+              <li><b>TrackIdentity:</b> the crops of one track waiting for an id.</li></ul></article>
+          <article class="file"><header><span class="path">attributes.py</span><span class="tag t-core">Engine</span><span class="lines">193 lines</span></header>
+            <p>Vehicle colour and type, used to reject wrong matches.</p>
+            <ul><li><b>ColorNamer:</b> names the body colour after removing each camera's colour tint (C31/C41 look blue). The learned tint is saved to <code>storage/color_cast.json</code>.</li>
+              <li><b>AttributeGate:</b> a stored vehicle whose colour or type clearly differs (white vs black, car vs motorcycle) can't give its id. Near shades (white/silver) still match.</li>
+              <li><b>VoteBox:</b> majority vote that steadies noisy per-frame readings.</li></ul></article>
+          <article class="file"><header><span class="path">switching.py</span><span class="tag t-core">Engine</span><span class="lines">144 lines</span></header>
+            <p>Camera scoring and switching (FR-CS-01..06), the "vision mixer".</p>
+            <ul><li><b>camera_score:</b> box area ÷ frame area × resolution weight.</li>
+              <li><b>CameraSwitchingEngine:</b> a small Dynamic Bayesian Network keeps a belief per camera. A new camera must beat the current one by 0.15 (hysteresis) for 5 frames in a row (buffer). If the current camera loses the car for 3 frames, it falls back at once.</li>
+              <li><b>handleOverlapZone / OverlapDetection:</b> when several cameras see the car, keep the best one.</li></ul></article>
+          <article class="file"><header><span class="path">db.py</span><span class="tag t-core">Engine</span><span class="lines">140 lines</span></header>
+            <p>SQLite access. <b>Database</b> is a thread-safe wrapper in WAL mode: create vehicles, store/load embeddings, upsert cameras, merge vehicles, write logs, and <code>claim_job</code> so each journey request is taken by one worker only.</p></article>
+          <article class="file"><header><span class="path">jobs.py</span><span class="tag t-core">Engine</span><span class="lines">120 lines</span></header>
+            <p>Journey-video requests (UC-12..14). <b>JourneyWorker</b> is a background thread that picks queued jobs, runs <code>collect_clips</code> (all sightings of the car, in order, padded), stitches them and emails the result. <code>resolve_gid</code> follows merges (VH-007 → VH-002). Slow FFmpeg or SMTP never blocks live tracking.</p></article>
+          <article class="file"><header><span class="path">stitcher.py</span><span class="tag t-core">Engine</span><span class="lines">171 lines</span></header>
+            <p>Journey video with FFmpeg (FR-VS-01..05). <b>VideoStitcher</b> sorts clips by time, removes overlaps so each moment comes from the best (highest-resolution) camera, cuts the pieces and joins them into one H.264 MP4. Missing or broken clips are skipped. <code>find_ffmpeg</code> finds the FFmpeg program.</p></article>
+          <article class="file"><header><span class="path">emailer.py</span><span class="tag t-core">Engine</span><span class="lines">95 lines</span></header>
+            <p>Email delivery over SMTP (FR-ED-01..04). <b>EmailService</b>: <code>attachVideo</code> then <code>sendEmail</code>, which returns true or false and never crashes the engine. The login comes from <code>.env</code> (SMTP_USER / SMTP_PASSWORD), never from code (NFR-S-01).</p></article>
+          <article class="file"><header><span class="path">bridge.py</span><span class="tag t-core">Engine</span><span class="lines">133 lines</span></header>
+            <p>The engine's WebSocket client to the PHP hub. <b>Bridge</b> sends JSON events and binary frames (header length + JSON header + JPEG), keeps only the newest unsent frame per camera, reconnects on its own, and passes operator commands back to the pipeline.</p></article>
+          <article class="file"><header><span class="path">config.py</span><span class="tag t-core">Engine</span><span class="lines">150 lines</span></header>
+            <p>Loads <code>config.yaml</code> and <code>.env</code> and finds the cameras. <b>Config</b> gives dotted access (<code>cfg.get("reid.similarity_threshold")</code>). <b>CameraSpec</b> describes one camera. <code>clock_seconds</code> / <code>format_clock</code> convert "08:00:00" ↔ 28800 s. <code>ensure_env</code> creates a random engine token.</p></article>
+          <article class="file"><header><span class="path">logbus.py</span><span class="tag t-core">Engine</span><span class="lines">51 lines</span></header>
+            <p>Plain-English system log (NFR-U-03). Each message goes to a rotating log file, the <code>logs</code> table and the dashboard's live log panel.</p></article>
+          <article class="file"><header><span class="path">__init__.py</span><span class="tag t-core">Engine</span><span class="lines">7 lines</span></header>
+            <p>Marks <code>mcvt</code> as a Python package and states the layers: detection → tracking → ReID + switching → output.</p></article>
+        </div>
+      </section>
+
+      <!-- ========================================================= REID -->
+      <section id="reid">
+        <div class="section-head"><h2>ReID model <code>engine/mcvt/reid/</code></h2><p class="lede">The network that turns a vehicle crop into a feature vector.</p></div>
+        <div class="files-list">
+          <article class="file"><header><span class="path">resnet_ibn.py</span><span class="tag t-core">Engine</span><span class="lines">136 lines</span></header>
+            <p>ResNet50-IBN-a network written in plain PyTorch, so the public VeRi-776 weights load without installing FastReID. IBN layers (half Instance-Norm, half Batch-Norm) make features robust to colour and light differences between cameras (FR-RI-05).</p>
+            <ul><li><b>IBN, Bottleneck, NonLocal, ResNetIBNBackbone:</b> the network layers. <b>GeneralizedMeanPoolingP + EmbeddingHead:</b> pooling to a 2048-d vector.</li>
+              <li><b>ResNetIBNReID.load_fastreid_checkpoint:</b> loads weights safely (tensors only).</li></ul></article>
+          <article class="file"><header><span class="path">extractor.py</span><span class="tag t-core">Engine</span><span class="lines">87 lines</span></header>
+            <p><b>FeatureExtractor.extractFeatures</b> resizes crops, runs the network and returns unit-length vectors (FR-RI-01). <b>ReIDAdapter</b> is an optional learned projection for these cameras. <code>color_histogram</code> is a cheap colour descriptor that DeepSORT uses on CPU.</p></article>
+          <article class="file"><header><span class="path">sequence.py</span><span class="tag t-core">Engine</span><span class="lines">59 lines</span></header>
+            <p>Optional GRU (RNN) that turns a track's crops, in time order, into one signature. <b>SeqReID</b> is the network and <b>SequenceAggregator</b> applies it.</p>
+            <div class="note">In the current <code>config.yaml</code>, <code>reid.sequence_model</code> is empty, so the engine averages crop features. The ResNet weights in use (<code>mcvt_reid_e2e.pth</code>) were trained together with a GRU, so that training is what improved the features.</div></article>
+          <article class="file"><header><span class="path">__init__.py</span><span class="tag t-core">Engine</span><span class="lines">1 line</span></header>
+            <p>Marks <code>reid</code> as a package.</p></article>
+        </div>
+      </section>
+
+      <!-- ========================================================= WEB -->
+      <section id="web">
+        <div class="section-head"><h2>Web server &amp; WebSocket hub <code>web/</code></h2><p class="lede">Plain PHP 8 with no Composer packages: login, dashboard and the live hub.</p></div>
+        <div class="files-list">
+          <article class="file"><header><span class="path">lib/WsServer.php</span><span class="tag t-web">Web</span><span class="lines">455 lines</span></header>
+            <p>The WebSocket hub (RFC 6455), written by hand on PHP streams. The engine connects with the secret engine token; browsers connect with a short-lived token from their login.</p>
+            <ul><li><b>handshake / decodeFrames / encode:</b> the WebSocket protocol itself.</li>
+              <li><b>broadcast:</b> sends engine events and video frames to every browser. Slow browsers drop old frames instead of lagging.</li>
+              <li><b>onMessage / sendFocusSet:</b> passes each operator's "follow this vehicle" choice to the engine.</li></ul></article>
+          <article class="file"><header><span class="path">lib/App.php</span><span class="tag t-web">Web</span><span class="lines">209 lines</span></header>
+            <p>Shared services for every page: reads config and <code>.env</code>, opens the database (PDO SQLite), sessions, <code>login</code> with password hashes, <code>requireUser</code> on every page and API, CSRF tokens, <code>issueWsToken</code>, JSON replies, HTML escaping.</p></article>
+          <article class="file"><header><span class="path">lib/Yaml.php</span><span class="tag t-web">Web</span><span class="lines">164 lines</span></header>
+            <p>A small YAML reader so PHP can read the same <code>config.yaml</code> as Python (PHP has no built-in YAML parser).</p></article>
+          <article class="file"><header><span class="path">bootstrap.php</span><span class="tag t-web">Web</span><span class="lines">5 lines</span></header>
+            <p>Loaded by every page: includes <code>Yaml.php</code> and <code>App.php</code> and calls <code>App::init</code>.</p></article>
+          <article class="file"><header><span class="path">bin/ws-server.php · bin/serve.php</span><span class="tag t-web">Web</span><span class="lines">19 / 14 lines</span></header>
+            <p>Start scripts. <code>ws-server.php</code> runs the hub on port 8090. <code>serve.php</code> runs PHP's built-in web server on port 8080 with <code>public/</code> as the web root.</p></article>
+          <article class="file"><header><span class="path">bin/create-user.php</span><span class="tag t-web">Web</span><span class="lines">38 lines</span></header>
+            <p>Creates or updates an operator account from the command line (<code>php web/bin/create-user.php &lt;name&gt; [operator|admin]</code>). The password is typed in, not passed on the command line.</p></article>
+          <article class="file"><header><span class="path">public/index.php</span><span class="tag t-web">Web</span><span class="lines">227 lines</span></header>
+            <p>The dashboard page (FR-UI-01..04): header with Grid View / Focus Stream and the auto-switch toggle, the camera panel, and a sidebar with the <b>Live</b>, <b>All</b> and <b>Requests</b> tabs. Redirects to login if not signed in.</p></article>
+          <article class="file"><header><span class="path">public/assets/app.js</span><span class="tag t-web">Web</span><span class="lines">868 lines</span></header>
+            <p>All dashboard behaviour in the browser.</p>
+            <ul><li><b>connect / onEvent / onFrame / decode:</b> opens the WebSocket, receives events and JPEG frames.</li>
+              <li><b>render / drawCell / drawTracks:</b> draws every camera and the coloured boxes with VH ids.</li>
+              <li><b>track / untrack / onSwitch / onHandoff:</b> follow a clicked car, show the "switched to C…" banner and the "searching next cameras" state.</li>
+              <li><b>loadJourney / startReplay / playStep:</b> journey list and replay of each camera visit with the box drawn on top.</li>
+              <li><b>loadFeatures / renderFeatures:</b> "Extracted features" panel. <b>renderGallery / loadHistory / loadJobs:</b> the three tabs. <b>addLog:</b> live log.</li></ul></article>
+          <article class="file"><header><span class="path">public/assets/app.css</span><span class="tag t-web">Web</span><span class="lines">333 lines</span></header>
+            <p>Styles for the dashboard: dark theme, camera grid, sidebar cards, banners, replay controls.</p></article>
+          <article class="file"><header><span class="path">public/login.php · public/logout.php</span><span class="tag t-web">Web</span><span class="lines">45 / 8 lines</span></header>
+            <p>Sign-in form with CSRF check (calls <code>App::login</code>), and sign-out that clears the session.</p></article>
+          <article class="file"><header><span class="path">public/media.php</span><span class="tag t-web">Web</span><span class="lines">119 lines</span></header>
+            <p>The only way to get stored media, and only when signed in (NFR-S-03). Files stay outside the web root. Serves vehicle thumbnails, stitched journey videos (with HTTP Range so the video can seek), and short clips of one camera visit cut with FFmpeg and cached for the replay.</p></article>
+        </div>
+      </section>
+
+      <!-- ========================================================= API -->
+      <section id="api">
+        <div class="section-head"><h2>REST API <code>web/public/api/</code></h2><p class="lede">Small JSON endpoints the dashboard calls. Every one checks the login first.</p></div>
+        <div class="files-list">
+          <article class="file"><header><span class="path">session.php</span><span class="tag t-web">API</span><span class="lines">22 lines</span></header>
+            <p>Returns the signed-in user, CSRF token, WebSocket address and a fresh WebSocket token, plus a few settings shown in the UI.</p></article>
+          <article class="file"><header><span class="path">cameras.php</span><span class="tag t-web">API</span><span class="lines">7 lines</span></header>
+            <p>List of cameras with resolution, FPS, resolution weight and status.</p></article>
+          <article class="file"><header><span class="path">vehicles.php</span><span class="tag t-web">API</span><span class="lines">37 lines</span></header>
+            <p>Vehicle history search (by text or camera), for the "All" tab.</p></article>
+          <article class="file"><header><span class="path">vehicle.php</span><span class="tag t-web">API</span><span class="lines">57 lines</span></header>
+            <p>Full details of one vehicle: attributes, camera timeline, switches and requests.</p></article>
+          <article class="file"><header><span class="path">features.php</span><span class="tag t-web">API</span><span class="lines">168 lines</span></header>
+            <p>What ReID stored for one vehicle: colour/type, mean 2048-d embedding, every sample with its similarity, how consistent the samples are, and the most similar other vehicles.</p></article>
+          <article class="file"><header><span class="path">journey_steps.php</span><span class="tag t-web">API</span><span class="lines">90 lines</span></header>
+            <p>A vehicle's journey as camera visits in time order, with the clip link, the boxes and the gap between cameras. Used by the replay.</p></article>
+          <article class="file"><header><span class="path">journey.php</span><span class="tag t-web">API</span><span class="lines">44 lines</span></header>
+            <p>POST queues a "full journey video" request (vehicle id + optional email) in the <code>jobs</code> table. GET returns its status.</p></article>
+          <article class="file"><header><span class="path">jobs.php</span><span class="tag t-web">API</span><span class="lines">13 lines</span></header>
+            <p>The last 50 journey requests with status, message and video link, for the "Requests" tab.</p></article>
+          <article class="file"><header><span class="path">logs.php</span><span class="tag t-web">API</span><span class="lines">8 lines</span></header>
+            <p>The latest system log lines (up to 500).</p></article>
+        </div>
+      </section>
+
+      <!-- ========================================================= TESTS -->
+      <section id="tests">
+        <div class="section-head"><h2>Tests <code>engine/tests/</code></h2><p class="lede">pytest suite. Last full run: 60 passed, 1 expected fail (Re-ID speed needs a GPU). Run with <code>cd engine</code> then <code>python -m pytest tests -v</code>.</p></div>
+        <div class="files-list">
+          <article class="file"><header><span class="path">conftest.py</span><span class="tag t-test">Test</span><span class="lines">42 lines</span></header>
+            <p>Shared setup: loads the config, detector and feature extractor once, and real frames from the dataset.</p></article>
+          <article class="file"><header><span class="path">test_detection.py</span><span class="tag t-test">Test</span><span class="lines">44 lines</span></header>
+            <p>TC-VD-01..05: car in a clear frame, empty frame, several cars, low light, non-vehicles filtered out.</p></article>
+          <article class="file"><header><span class="path">test_switching.py</span><span class="tag t-test">Test</span><span class="lines">43 lines</span></header>
+            <p>TC-CS-01..05: switch to the higher-resolution camera, hysteresis, 5-frame rule, overlap zone, fallback, score formula.</p></article>
+          <article class="file"><header><span class="path">test_reid.py</span><span class="tag t-test">Test</span><span class="lines">95 lines</span></header>
+            <p>TC-RI-01..05: new car gets a new id, same car matches, different car rejected, after occlusion, feature speed (expected fail on CPU).</p></article>
+          <article class="file"><header><span class="path">test_stitching_email.py</span><span class="tag t-test">Test</span><span class="lines">156 lines</span></header>
+            <p>TC-VE-01..05: clips in time order, overlaps removed, missing clip skipped, email with attachment, wrong password handled. Uses a tiny fake SMTP server, so no real mail is sent.</p></article>
+          <article class="file"><header><span class="path">test_database_jobs.py</span><span class="tag t-test">Test</span><span class="lines">93 lines</span></header>
+            <p>TC-DB-01..07: tables created in WAL mode, sequential ids, embedding round-trip, merge, merge chain, clip order/padding, a job claimed once by 4 threads.</p></article>
+          <article class="file"><header><span class="path">test_config_tracking.py</span><span class="tag t-test">Test</span><span class="lines">74 lines</span></header>
+            <p>TC-CF-01..03 (thresholds in config, 6 cameras, clock conversion) and TC-TR-01..05 (stable track id, two cars, occlusion prediction, removal after max_age, box helpers).</p></article>
+          <article class="file"><header><span class="path">test_id_rule.py</span><span class="tag t-test">Test</span><span class="lines">124 lines</span></header>
+            <p>The id rule: best similarity above the threshold wins, below it gives a new id, no id on two cameras at once, overlap linking, displacing a weaker match.</p></article>
+          <article class="file"><header><span class="path">test_handoff.py</span><span class="tag t-test">Test</span><span class="lines">64 lines</span></header>
+            <p>Hand-off: a car that just left matches in the next camera at the hand-off threshold, followed-car threshold, duplicate id merged.</p></article>
+          <article class="file"><header><span class="path">test_attributes.py</span><span class="tag t-test">Test</span><span class="lines">77 lines</span></header>
+            <p>Colour/type: camera tint removed, colour ladder, car/truck allowed but not motorcycle, different colour gives a new id.</p></article>
+          <article class="file"><header><span class="path">test_flow.py</span><span class="tag t-test">Test</span><span class="lines">22 lines</span></header>
+            <p>Optical-flow box follows a moving car and stays still when nothing moves.</p></article>
+        </div>
+      </section>
+
+      <!-- ========================================================= TRAINING -->
+      <section id="training">
+        <div class="section-head"><h2>Training <code>engine/training/</code></h2><p class="lede">Scripts used once to build datasets and train the models. The live system doesn't run them. No hand labelling was needed: a big "teacher" model or tracking produced the labels.</p></div>
+        <div class="files-list">
+          <article class="file"><header><span class="path">make_dataset.py</span><span class="tag t-train">Training</span><span class="lines">79 lines</span></header>
+            <p>Detector dataset: a large YOLOv8m labels frames from every camera ("pseudo-labels").</p></article>
+          <article class="file"><header><span class="path">train_detector.py</span><span class="tag t-train">Training</span><span class="lines">43 lines</span></header>
+            <p>Fine-tunes YOLOv8n on that dataset on the CPU and saves <code>yolov8n_mcvt.pt</code> (detector v1).</p></article>
+          <article class="file"><header><span class="path">export_detector_frames.py</span><span class="tag t-train">Training</span><span class="lines">83 lines</span></header>
+            <p>Exports frames for GPU training, mostly the moments just before a car was first detected, when it was far away and still missed.</p></article>
+          <article class="file"><header><span class="path">kaggle_finetune_detector.py</span><span class="tag t-train">Training</span><span class="lines">146 lines</span></header>
+            <p>Kaggle GPU script: YOLOv8x at 1280 px labels the frames, then YOLOv8n is trained on them (detector v2, <code>yolov8n_mcvt_v2.pt</code>, the one in use).</p></article>
+          <article class="file"><header><span class="path">evaluate_detector.py</span><span class="tag t-train">Training</span><span class="lines">59 lines</span></header>
+            <p>Compares detectors on held-out frames: precision, recall, F1 and speed.</p></article>
+          <article class="file"><header><span class="path">make_reid_dataset.py</span><span class="tag t-train">Training</span><span class="lines">182 lines</span></header>
+            <p>ReID dataset: cuts each camera's video into tracklets of moving cars (one tracklet = one car in one camera) and saves crops.</p></article>
+          <article class="file"><header><span class="path">train_reid_adapter.py</span><span class="tag t-train">Training</span><span class="lines">332 lines</span></header>
+            <p>CPU method: an LDA projection (2048 → 512) learned on the project's cameras, with cross-camera pairs found from overlapping cameras and timing. Superseded by the fine-tuned weights.</p></article>
+          <article class="file"><header><span class="path">train_reid_head.py</span><span class="tag t-train">Training</span><span class="lines">247 lines</span></header>
+            <p>CPU method: a small head on the frozen ResNet trained with triplet + ID loss. Also superseded.</p></article>
+          <article class="file"><header><span class="path">export_colab_dataset.py · make_colab_notebook.py</span><span class="tag t-train">Training</span><span class="lines">58 / 299 lines</span></header>
+            <p>Pack the crops and write the Colab/Kaggle notebook that fine-tunes the whole ResNet50-IBN on a GPU (gave <code>mcvt_reid_finetuned.pth</code>).</p></article>
+          <article class="file"><header><span class="path">kaggle_train_gru.py</span><span class="tag t-train">Training</span><span class="lines">306 lines</span></header>
+            <p>First RNN try: a GRU on frozen ResNet features. It didn't beat the plain average, because the frozen features already separated the training cars perfectly.</p></article>
+          <article class="file"><header><span class="path">kaggle_train_gru_e2e.py · make_colab_rnn.py</span><span class="tag t-train">Training</span><span class="lines">323 / 100 lines</span></header>
+            <p>The final method: ResNet50-IBN and a GRU trained together end-to-end on augmented image sequences (blur for far cars, crop, colour). This produced <code>mcvt_reid_e2e.pth</code>, the weights in use. <code>make_colab_rnn.py</code> packs it for Google Colab.</p></article>
+          <article class="file"><header><span class="path">calibrate_handoff.py</span><span class="tag t-train">Training</span><span class="lines">89 lines</span></header>
+            <p>Measures how similar the same car looks across cameras and saves crop pictures, to help set the hand-off thresholds.</p></article>
+        </div>
+      </section>
+
+      <!-- ========================================================= PRESENTATION -->
+      <section id="pres">
+        <div class="section-head"><h2>Presentation &amp; diagram helpers</h2><p class="lede">Scripts made for the FYP-II deck and the updated diagrams. They only read the project; they don't change it.</p></div>
+        <div class="files-list">
+          <article class="file"><header><span class="path">presentation/build_extended.py · build_new_only.py</span><span class="tag t-cfg">Slides</span></header>
+            <p>Build the full deck (original slides + new CLO slides, test results filled in) and the deck with only the new slides. Both add the ≥ / ✓ fix for pdfLaTeX.</p></article>
+          <article class="file"><header><span class="path">presentation/new_clo_slides.tex</span><span class="tag t-cfg">Slides</span></header>
+            <p>The 29 new slides (CLO1–CLO6, dashboard pictures, stitching, test results, timeline, future work).</p></article>
+          <article class="file"><header><span class="path">presentation/make_timeline.py · make_test_chart.py · make_stitch_figure.py</span><span class="tag t-cfg">Slides</span></header>
+            <p>Draw <code>timeline.png</code>, the test results chart from <code>test_report.xml</code>, and the stitched journey figure for VH-24852 (C31 → C51 → C41 → C61).</p></article>
+          <article class="file"><header><span class="path">diagram file/update_*.py</span><span class="tag t-cfg">Diagrams</span></header>
+            <p>Five scripts that copy the original draw.io diagrams (use case, sequence, component, ER, class) and change only what the code changed, saving <code>*_updated.drawio</code>.</p></article>
+        </div>
+        <p class="empty" id="none" hidden>No file matches that filter.</p>
+      </section>
+    </main>
+  </div>
+</div>
+
+<script>
+(() => {
+  const q = document.getElementById("q");
+  const count = document.getElementById("count");
+  const none = document.getElementById("none");
+  const files = [...document.querySelectorAll(".file")];
+  const sections = [...document.querySelectorAll("main > section")].filter((s) => s.id !== "flow");
+  sections.forEach((s) => {
+    const n = s.querySelectorAll(".file").length;
+    const el = document.querySelector(`[data-sec="${s.id}"]`);
+    if (el) el.textContent = n;
+  });
+  function apply() {
+    const t = q.value.trim().toLowerCase();
+    let shown = 0;
+    files.forEach((f) => { const ok = !t || f.textContent.toLowerCase().includes(t); f.hidden = !ok; if (ok) shown++; });
+    sections.forEach((s) => { s.hidden = t !== "" && !s.querySelector(".file:not([hidden])"); });
+    document.getElementById("flow").hidden = t !== "";
+    count.textContent = t ? `${shown} of ${files.length} entries` : `${files.length} entries`;
+    none.hidden = shown !== 0;
+    if (shown === 0) document.getElementById("pres").hidden = false;
+  }
+  q.addEventListener("input", apply);
+  apply();
+})();
+</script>
